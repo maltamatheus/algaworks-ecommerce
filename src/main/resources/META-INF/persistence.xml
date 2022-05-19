@@ -6,8 +6,8 @@
 	<persistence-unit name="cursojpa">
 		<properties>
         <property name="javax.persistence.jdbc.url"                          value="jdbc:postgresql://systems.m2ra.com:5432/zeus"/>
-        <property name="javax.persistence.jdbc.user"                         value="postgres"                                    />
-        <property name="javax.persistence.jdbc.password"                     value="m1neirao"                                    />
+        <property name="javax.persistence.jdbc.user"                         value="usuario"                                     />
+        <property name="javax.persistence.jdbc.password"                     value="senha"                                       />
         <property name="javax.persistence.jdbc.driver"                       value="org.postgresql.Driver"                       />
         <property name="hibernate.show_sql"                                  value="true"                                        />
         <property name="hibernate.format_sql"                                value="true"                                        />
