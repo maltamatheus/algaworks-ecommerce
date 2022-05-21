@@ -20,6 +20,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Embeddable
+@ToString
 public class ItemPedidoId implements Serializable{
 	
 	@EqualsAndHashCode.Include
