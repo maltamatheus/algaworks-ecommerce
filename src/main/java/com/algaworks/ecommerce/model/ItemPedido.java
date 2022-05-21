@@ -30,7 +30,15 @@ import lombok.ToString;
 public class ItemPedido {
 
 	@EmbeddedId
-	private ItemPedidoId id;
+    private ItemPedidoId id;
+	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "id_pedido",updatable = false, insertable = false)
+	private Pedido idPedido;
+	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "id_produto", updatable = false, insertable = false)
+	private Produto idProduto;
 
 	/*
 	 * Estrutura para o IdClass
@@ -44,15 +52,7 @@ public class ItemPedido {
 	@Column(name = "id_produto",insertable = false, updatable = false)
 	private Integer idProduto;
 	*/
-	
-//	@ManyToOne(optional = false)
-//	@JoinColumn(name = "id_pedido")
-//	private Pedido pedido;
-//	
-//	@ManyToOne(optional = false)
-//	@JoinColumn(name = "id_produto")
-//	private Produto produtoId;
-	
+
 	private Integer quantidade;
 	
 }
