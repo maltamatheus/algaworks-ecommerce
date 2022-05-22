@@ -10,11 +10,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.PostLoad;
 import javax.persistence.PostRemove;
 import javax.persistence.PrePersist;
 import javax.persistence.PreRemove;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.algaworks.ecommerce.enums.EnumSexo;
 import com.algaworks.ecommerce.listeners.ListenerCliente;
@@ -46,6 +48,9 @@ public class Cliente {
 	@ToString.Include
 	private String sobrenome;
 	
+	@Transient
+	private String nomeCompleto;
+	
 	@Enumerated(EnumType.STRING)
 	@ToString.Include
 	private EnumSexo sexo;
@@ -73,5 +78,12 @@ public class Cliente {
 	@PostRemove
 	public void aposRemover() {
 		System.out.println("Informação excluída");
+	}
+
+	@PostLoad
+	public void geraNomeCompleto() {
+		this.nomeCompleto = this.nome + " " + this.sobrenome;
+		
+		System.out.println("PostLoad da Classe Cliente - " + this.nomeCompleto);
 	}
 }

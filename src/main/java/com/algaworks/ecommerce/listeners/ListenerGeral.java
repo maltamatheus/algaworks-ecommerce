@@ -6,7 +6,7 @@ public class ListenerGeral {
 	
 	@PostLoad
 	public void postLoadingClass(Object obj) {
-		System.out.println("Classe " + obj.getClass().getSimpleName() + " carregada");
+		System.out.println("Listener Geral - Classe " + obj.getClass().getSimpleName() + " carregada");
 	}
 
 }

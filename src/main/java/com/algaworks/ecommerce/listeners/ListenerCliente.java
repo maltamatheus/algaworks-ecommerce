@@ -8,7 +8,7 @@ public class ListenerCliente {
 	
 	@PostPersist
 	public void listenerAoGerarCliente(Cliente cliente) {
-		System.out.println("Cliente " + cliente.getNome() + " " + cliente.getSobrenome() + " gerado");
+		System.out.println("Listener Cliente - Cliente " + cliente.getNome() + " " + cliente.getSobrenome() + " gerado");
 	}
 
 }

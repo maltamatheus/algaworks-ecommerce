@@ -3,7 +3,9 @@ package com.algaworks.ecommerce.model;
 import java.math.BigDecimal;
 import java.util.List;
 
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -50,5 +52,10 @@ public class Produto {
 	
 	@OneToOne(mappedBy = "produto")
 	private Estoque estoque;
+	
+	@ElementCollection
+	@CollectionTable(name = "tab_tags_produto",joinColumns = @JoinColumn(name="id_produto"))
+	@Column(name = "tags_produto")
+	private List<String> tagsProduto;
 
 }

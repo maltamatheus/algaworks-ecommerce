@@ -3,6 +3,7 @@ package testes;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -21,6 +22,22 @@ import com.algaworks.ecommerce.model.Produto;
 import com.algaworks.ecommerce.model.chavescompostas.ItemPedidoId;
 
 public class TestesMapeamentoDeEntidades extends EntityManagerTests {
+	
+	@Test
+	public void aplicaTagProduto() {
+		Produto produto = manager.find(Produto.class, 1);
+		produto.setTagsProduto(Arrays.asList("Eletrônicos","Livro Digital","Ebook","Kindle"));
+		manager.getTransaction().begin();
+		manager.persist(produto);
+		manager.getTransaction().commit();
+		manager.clear();
+		
+		Produto produtoVerify = manager.find(Produto.class, 1);
+		
+		System.out.println(produtoVerify.toString());
+		
+	}
+		
 
 	@Test
 	public void testesCallBack() {
@@ -47,9 +64,9 @@ public class TestesMapeamentoDeEntidades extends EntityManagerTests {
 		
 		cliente = manager.find(Cliente.class, 2);
 		
-		manager.getTransaction().begin();
-		manager.remove(cliente);
-		manager.getTransaction().commit();
+//		manager.getTransaction().begin();
+//		manager.remove(cliente);
+//		manager.getTransaction().commit();
 		
 	}
 
