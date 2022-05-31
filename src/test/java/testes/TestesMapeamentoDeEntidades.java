@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import org.junit.Test;
 
 import com.algaworks.ecommerce.enums.EnumSexo;
 import com.algaworks.ecommerce.enums.EnumStatusPagamento;
+import com.algaworks.ecommerce.model.Caracteristica;
 import com.algaworks.ecommerce.model.Categoria;
 import com.algaworks.ecommerce.model.Cliente;
 import com.algaworks.ecommerce.model.ItemPedido;
@@ -19,9 +21,84 @@ import com.algaworks.ecommerce.model.NotaFiscal;
 import com.algaworks.ecommerce.model.PagamentoCartao;
 import com.algaworks.ecommerce.model.Pedido;
 import com.algaworks.ecommerce.model.Produto;
+import com.algaworks.ecommerce.model.Cliente;
 import com.algaworks.ecommerce.model.chavescompostas.ItemPedidoId;
 
 public class TestesMapeamentoDeEntidades extends EntityManagerTests {
+
+	@Test
+	public void testeInsereContatosCliente() {
+		
+		Cliente cliente = manager.find(Cliente.class, 1);
+		
+		cliente.setContatos(Collections.singletonMap("E-mail", "maltamatheus@gmail.com"));
+		
+		manager.getTransaction().begin();
+		manager.persist(cliente);
+		manager.getTransaction().commit();
+		
+		manager.clear();
+		
+		Cliente clienteVerify = manager.find(Cliente.class, 1);
+		
+		System.out.println(clienteVerify.toString());
+	}
+
+
+	
+	@Test
+	public void testeInsereCaracteristicas() {
+		
+		Caracteristica caracteristica = new Caracteristica();
+		
+		Produto produto = manager.find(Produto.class, 2);
+		
+		caracteristica.setDominio(produto.getClass().getSimpleName());
+		caracteristica.setCaracteristica("Tela");
+		caracteristica.setDescricao("7\"");
+		
+		produto.setCaracteristicas(Arrays.asList(caracteristica));
+		
+		manager.getTransaction().begin();
+		manager.persist(produto);
+		manager.getTransaction().commit();
+		
+		manager.clear();
+		
+		Produto produtoVerify = manager.find(Produto.class, 2);
+		
+		System.out.println(produtoVerify.toString());
+	}
+	
+	@Test
+	public void testeMapsId() {
+		Cliente cliente = manager.find(Cliente.class, 1);
+
+		manager.getTransaction().begin();
+		
+		Pedido pedido = new Pedido();
+		pedido.setCliente(cliente);
+		pedido.setDataPedido(LocalDateTime.now());
+		
+		manager.persist(pedido); //Cria o pedido no banco
+		
+		
+		NotaFiscal nf = new NotaFiscal();
+		
+		System.out.println("O ID do pedido é " + pedido.getId());		
+//		nf.setId(pedido.getId());
+		
+		nf.setPedido(pedido);
+		
+		nf.setXml("XML DA NOTA FISCAL");
+		
+		System.out.println(nf.toString());
+		
+		manager.persist(nf);;
+		
+		manager.getTransaction().commit();
+		
+	}
 	
 	@Test
 	public void aplicaTagProduto() {
@@ -32,7 +109,7 @@ public class TestesMapeamentoDeEntidades extends EntityManagerTests {
 		manager.getTransaction().commit();
 		manager.clear();
 		
-		Produto produtoVerify = manager.find(Produto.class, 1);
+		Cliente produtoVerify = manager.find(Cliente.class, 1);
 		
 		System.out.println(produtoVerify.toString());
 		
@@ -257,9 +334,9 @@ public class TestesMapeamentoDeEntidades extends EntityManagerTests {
 
 		ItemPedido itemPedido = new ItemPedido();
 
-		Produto produto = new Produto();
+		Cliente produto = new Cliente();
 
-		produto = manager.find(Produto.class, 1);
+		produto = manager.find(Cliente.class, 1);
 		
 		manager.getTransaction().begin();
 		manager.persist(cliente);

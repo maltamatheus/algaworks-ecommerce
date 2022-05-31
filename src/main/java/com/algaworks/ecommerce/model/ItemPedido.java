@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
 import javax.persistence.Table;
 
 import com.algaworks.ecommerce.model.chavescompostas.ItemPedidoId;
@@ -32,12 +33,14 @@ public class ItemPedido {
 	@EmbeddedId
     private ItemPedidoId id;
 	
+	@MapsId("idPedido")
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "id_pedido",updatable = false, insertable = false)
+	@JoinColumn(name = "id_pedido")
 	private Pedido idPedido;
 	
+	@MapsId("idProduto")
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "id_produto", updatable = false, insertable = false)
+	@JoinColumn(name = "id_produto")
 	private Produto idProduto;
 
 	/*

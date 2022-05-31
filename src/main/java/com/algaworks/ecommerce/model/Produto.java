@@ -57,5 +57,10 @@ public class Produto {
 	@CollectionTable(name = "tab_tags_produto",joinColumns = @JoinColumn(name="id_produto"))
 	@Column(name = "tags_produto")
 	private List<String> tagsProduto;
+	
+	@ElementCollection
+	@CollectionTable(name = "tab_caracteristicas",joinColumns = @JoinColumn(name = "id_caracteristica"))
+	@Column(name = "caracteristica")
+	private List<Caracteristica> caracteristicas;
 
 }
