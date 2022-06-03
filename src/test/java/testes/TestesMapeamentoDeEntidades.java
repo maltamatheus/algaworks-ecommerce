@@ -1,5 +1,11 @@
 package testes;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -21,10 +27,61 @@ import com.algaworks.ecommerce.model.NotaFiscal;
 import com.algaworks.ecommerce.model.PagamentoCartao;
 import com.algaworks.ecommerce.model.Pedido;
 import com.algaworks.ecommerce.model.Produto;
-import com.algaworks.ecommerce.model.Cliente;
 import com.algaworks.ecommerce.model.chavescompostas.ItemPedidoId;
 
 public class TestesMapeamentoDeEntidades extends EntityManagerTests {
+	
+	@Test
+	public void carregaXmlNotaFiscal() {
+		testeMapsId();
+		
+		NotaFiscal nf = manager.find(NotaFiscal.class,1);
+		
+		try {
+			
+			InputStream entrada = new FileInputStream("c://meusarquivos//programacao//projetos//algaworks-ecommerce//src//test//java//resources//commons//xml//NFPedido01.xml");
+			
+			byte[] dados = new byte[1024];
+					
+			int existe = 0;
+			
+			while (existe!= -1) {
+				existe = entrada.read(dados);
+			}
+			
+			entrada.close();
+
+			nf.setXml(dados);
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		manager.getTransaction().begin();
+		manager.persist(nf);
+		manager.getTransaction().commit();
+		
+		NotaFiscal nfVerify = manager.find(NotaFiscal.class, 1);
+		
+		File saida = new File("c://meusarquivos//programacao//projetos//algaworks-ecommerce//src//test//java//resources//commons//xml//NFSaida.xml");
+		
+		try {
+			FileOutputStream caneta = new FileOutputStream(saida);
+			byte[] dados = nfVerify.getXml();
+			caneta.write(dados);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	@Test
 	public void testeInsereContatosCliente() {
@@ -90,11 +147,11 @@ public class TestesMapeamentoDeEntidades extends EntityManagerTests {
 		
 		nf.setPedido(pedido);
 		
-		nf.setXml("XML DA NOTA FISCAL");
+//		nf.setXml("XML DA NOTA FISCAL");
 		
 		System.out.println(nf.toString());
 		
-		manager.persist(nf);;
+		manager.persist(nf);
 		
 		manager.getTransaction().commit();
 		
@@ -180,15 +237,15 @@ public class TestesMapeamentoDeEntidades extends EntityManagerTests {
 
 		NotaFiscal nf1 = new NotaFiscal();
 		nf1.setDataEmissao(new Date());
-		nf1.setXml("Nota Fiscal do Sabonete");
+//		nf1.setXml("Nota Fiscal do Sabonete");
 
 		NotaFiscal nf2 = new NotaFiscal();
 		nf2.setDataEmissao(new Date());
-		nf2.setXml("Nota Fiscal do Shampoo");
+//		nf2.setXml("Nota Fiscal do Shampoo");
 
 		NotaFiscal nf3 = new NotaFiscal();
 		nf3.setDataEmissao(new Date());
-		nf3.setXml("Nota Fiscal do Condicionador");
+//		nf3.setXml("Nota Fiscal do Condicionador");
 
 		nfs.add(nf1);
 		nfs.add(nf2);

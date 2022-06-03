@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 import javax.persistence.Table;
@@ -36,7 +37,9 @@ public class NotaFiscal {
 	@JoinColumn(name = "id_pedido")//,insertable = false,updatable = false)
 	private Pedido pedido;
 	
-	private String xml;
+	@Lob
+	@ToString.Exclude
+	private byte[] xml;
 	
 	@Column(name = "data_emissao_nf")
 	private Date dataEmissao;

@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -62,5 +63,9 @@ public class Produto {
 	@CollectionTable(name = "tab_caracteristicas",joinColumns = @JoinColumn(name = "id_caracteristica"))
 	@Column(name = "caracteristica")
 	private List<Caracteristica> caracteristicas;
+	
+	@Lob
+	@ToString.Exclude
+	private byte[] fotoProduto;
 
 }
