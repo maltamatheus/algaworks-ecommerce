@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -39,7 +38,8 @@ public class TestesMapeamentoDeEntidades extends EntityManagerTests {
 		
 		try {
 			
-			InputStream entrada = new FileInputStream("c://meusarquivos//programacao//projetos//algaworks-ecommerce//src//test//java//resources//commons//xml//NFPedido01.xml");
+			File file = new File("../resources/commons/xml/NFPedido01.xml");
+			FileInputStream entrada = new FileInputStream(file);
 			
 			byte[] dados = new byte[1024];
 					
@@ -68,7 +68,7 @@ public class TestesMapeamentoDeEntidades extends EntityManagerTests {
 		
 		NotaFiscal nfVerify = manager.find(NotaFiscal.class, 1);
 		
-		File saida = new File("c://meusarquivos//programacao//projetos//algaworks-ecommerce//src//test//java//resources//commons//xml//NFSaida.xml");
+		File saida = new File("../resources/commons/xml/NFSaida.xml");
 		
 		try {
 			FileOutputStream caneta = new FileOutputStream(saida);
