@@ -38,18 +38,20 @@ public class TestesMapeamentoDeEntidades extends EntityManagerTests {
 		
 		try {
 			
-			File file = new File("../resources/commons/xml/NFPedido01.xml");
-			FileInputStream entrada = new FileInputStream(file);
+//			File file = new File("/commons/xml/NFSaida.xml");
+//			FileInputStream entrada = new FileInputStream(file);
 			
 			byte[] dados = new byte[1024];
 					
 			int existe = 0;
 			
 			while (existe!= -1) {
-				existe = entrada.read(dados);
+//				existe = entrada.read(dados);
+				existe = TestesMapeamentoDeEntidades.class.getResourceAsStream("/commons/xml/NFPedido01.xml").read(dados);
+				System.out.println(existe);
 			}
 			
-			entrada.close();
+//			entrada.close();
 
 			nf.setXml(dados);
 			
@@ -68,12 +70,13 @@ public class TestesMapeamentoDeEntidades extends EntityManagerTests {
 		
 		NotaFiscal nfVerify = manager.find(NotaFiscal.class, 1);
 		
-		File saida = new File("../resources/commons/xml/NFSaida.xml");
+//		File saida = new File("/commons/xml/NFSaida.xml");
 		
 		try {
-			FileOutputStream caneta = new FileOutputStream(saida);
+//			FileOutputStream caneta = new FileOutputStream(saida);
 			byte[] dados = nfVerify.getXml();
-			caneta.write(dados);
+//			caneta.write(dados);
+			new FileOutputStream("/commons/xml/NFSaida.xml").write(dados);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -450,5 +453,9 @@ public class TestesMapeamentoDeEntidades extends EntityManagerTests {
 
 		System.out.println(pedidoVerify.toString());
 	}
+	
+//	public byte[] lerNotaFiscal() {
+//		return Testes
+//	}
 
 }
