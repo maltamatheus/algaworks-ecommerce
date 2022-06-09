@@ -19,17 +19,17 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@ToString(onlyExplicitlyIncluded = true)
+@ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "tab_categorias")
-public class Categoria {
+public class Categoria extends EntidadeBase{
 
-	@EqualsAndHashCode.Include
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@ToString.Include
-	private Integer id;
+//	@EqualsAndHashCode.Include
+//	@Id
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
+//	@ToString.Include
+//	private Integer id;
 	
 	@ToString.Include
 	private String nome;

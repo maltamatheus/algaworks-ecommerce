@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,6 +17,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.algaworks.ecommerce.enums.EnumDirectories;
 import com.algaworks.ecommerce.enums.EnumSexo;
 import com.algaworks.ecommerce.enums.EnumStatusPagamento;
 import com.algaworks.ecommerce.model.Caracteristica;
@@ -31,35 +33,110 @@ import com.algaworks.ecommerce.model.chavescompostas.ItemPedidoId;
 public class TestesMapeamentoDeEntidades extends EntityManagerTests {
 	
 	@Test
+	public void inserirPagamentoCartaoPedido() {
+		carregaXmlNotaFiscal();
+		
+		PagamentoCartao pc = new PagamentoCartao();
+		
+		pc.setPedido(manager.find(Pedido.class, 1));
+		pc.setStatus(EnumStatusPagamento.PROCESSANDO);
+		pc.setNumeroCartao("26061980");
+		
+		manager.getTransaction().begin();
+		manager.persist(pc);
+		manager.getTransaction().commit();
+		
+		manager.clear();
+		
+		Pedido pedidoVerify = manager.find(Pedido.class,1);
+		
+		System.out.println(pedidoVerify.getPagamento().toString());
+		
+	}
+	
+	@Test
+	public void inserirCategoriaEntidadeBase() {
+		
+		Categoria categoria = new Categoria();
+		
+		categoria.setNome("Bebidas");
+		
+		manager.getTransaction().begin();
+		manager.persist(categoria);
+		manager.getTransaction().commit();
+		
+		manager.clear();
+		
+		Categoria categoriaVerify = manager.find(Categoria.class, categoria.getId());
+		
+		System.out.println(categoriaVerify.getId() + " " + categoriaVerify.getNome());
+	}
+
+	@Test
+	public void inserirClienteEntidadeBase() {
+		Cliente cliente = new Cliente();
+		
+		cliente.setNome("Matheus");
+		cliente.setSobrenome("Malta de Aguiar");
+		cliente.setPropriedadeAdicional("Cara forte pa caramba");
+		cliente.setDataNascto(LocalDate.of(1980, 6, 26));
+		
+		manager.getTransaction().begin();
+		manager.merge(cliente);
+		manager.getTransaction().commit();
+		
+		Cliente clienteVerify = manager.find(Cliente.class,2);
+		
+		System.out.println(clienteVerify.toString());
+		
+	}
+	
+	@Test
+	public void inserirDetalheCliente() {
+		Cliente cliente = manager.find(Cliente.class, 1);
+		
+		cliente.setPropriedadeAdicional("Cara forte pa caramba");
+		
+		manager.getTransaction().begin();
+		manager.merge(cliente);
+		manager.getTransaction().commit();
+		
+		Cliente clienteVerify = manager.find(Cliente.class,1);
+		
+		System.out.println(clienteVerify.getPropriedadeAdicional());
+		
+	}
+	
+	@Test
 	public void carregaXmlNotaFiscal() {
+		
 		testeMapsId();
+		
+		EnumDirectories diretorio = EnumDirectories.COMMONS_XML;
 		
 		NotaFiscal nf = manager.find(NotaFiscal.class,1);
 		
 		try {
 			
-//			File file = new File("/commons/xml/NFSaida.xml");
-//			FileInputStream entrada = new FileInputStream(file);
+			File file = new File(diretorio.getDiretorio() + "/NFPedido01.xml");
+			FileInputStream entrada = new FileInputStream(file);
 			
 			byte[] dados = new byte[1024];
 					
 			int existe = 0;
 			
 			while (existe!= -1) {
-//				existe = entrada.read(dados);
-				existe = TestesMapeamentoDeEntidades.class.getResourceAsStream("/commons/xml/NFPedido01.xml").read(dados);
-				System.out.println(existe);
+				existe = entrada.read(dados);
+//				existe = TestesMapeamentoDeEntidades.class.getResourceAsStream("/commons/xml/NFPedido01.xml").read(dados);
 			}
 			
-//			entrada.close();
+			entrada.close();
 
 			nf.setXml(dados);
 			
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -70,18 +147,17 @@ public class TestesMapeamentoDeEntidades extends EntityManagerTests {
 		
 		NotaFiscal nfVerify = manager.find(NotaFiscal.class, 1);
 		
-//		File saida = new File("/commons/xml/NFSaida.xml");
+		File saida = new File(diretorio.getDiretorio() + "/NFSaida.xml");
 		
 		try {
-//			FileOutputStream caneta = new FileOutputStream(saida);
+			
+			FileOutputStream caneta = new FileOutputStream(saida);
 			byte[] dados = nfVerify.getXml();
-//			caneta.write(dados);
-			new FileOutputStream("/commons/xml/NFSaida.xml").write(dados);
+			
+			caneta.write(dados);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -132,30 +208,21 @@ public class TestesMapeamentoDeEntidades extends EntityManagerTests {
 	
 	@Test
 	public void testeMapsId() {
-		Cliente cliente = manager.find(Cliente.class, 1);
 
-		manager.getTransaction().begin();
+		Cliente cliente = manager.find(Cliente.class, 1);
 		
 		Pedido pedido = new Pedido();
 		pedido.setCliente(cliente);
 		pedido.setDataPedido(LocalDateTime.now());
 		
+		manager.getTransaction().begin();
 		manager.persist(pedido); //Cria o pedido no banco
 		
 		
 		NotaFiscal nf = new NotaFiscal();
 		
-		System.out.println("O ID do pedido é " + pedido.getId());		
-//		nf.setId(pedido.getId());
-		
 		nf.setPedido(pedido);
-		
-//		nf.setXml("XML DA NOTA FISCAL");
-		
-		System.out.println(nf.toString());
-		
 		manager.persist(nf);
-		
 		manager.getTransaction().commit();
 		
 	}
@@ -283,11 +350,13 @@ public class TestesMapeamentoDeEntidades extends EntityManagerTests {
 
 		PagamentoCartao cartao = new PagamentoCartao();
 
-		cartao.setNumero("123456");
+		cartao.setNumeroCartao("123456");
 		cartao.setStatus(EnumStatusPagamento.PROCESSANDO);
 		cartao.setPedido(pedido);
-
+		
 		pedido.setPagamento(cartao);
+		
+		pedido.setCliente(manager.find(Cliente.class, 1));
 
 		manager.getTransaction().begin();
 		manager.persist(pedido);
@@ -298,7 +367,7 @@ public class TestesMapeamentoDeEntidades extends EntityManagerTests {
 
 		PagamentoCartao cartaoVerify = manager.find(PagamentoCartao.class, 1);
 
-		Assert.assertTrue(cartaoVerify.getPedido().getPagamento().getNumero().equalsIgnoreCase("123456"));
+		Assert.assertTrue(cartaoVerify.getNumeroCartao().equalsIgnoreCase("123456"));
 
 	}
 

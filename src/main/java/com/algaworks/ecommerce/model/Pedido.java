@@ -17,7 +17,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.algaworks.ecommerce.enums.EnumStatusPedido;
-import com.algaworks.ecommerce.model.chavescompostas.ItemPedidoId;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -66,7 +65,7 @@ public class Pedido implements Serializable{
 	private EnderecoEntregaPedido enderecoEntrega;
 	
 	@OneToOne(mappedBy = "pedido")
-	private PagamentoCartao pagamento;
+	private Pagamento pagamento;
 	
 	@OneToMany(mappedBy = "pedido")
 	private List<NotaFiscal> notasPedido;

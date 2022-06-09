@@ -34,7 +34,7 @@ public class NotaFiscal {
 
 	@MapsId
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "id_pedido")//,insertable = false,updatable = false)
+	@JoinColumn(name = "id_pedido")
 	private Pedido pedido;
 	
 	@Lob

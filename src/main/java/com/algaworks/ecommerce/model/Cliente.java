@@ -1,5 +1,6 @@
 package com.algaworks.ecommerce.model;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +22,8 @@ import javax.persistence.PostRemove;
 import javax.persistence.PrePersist;
 import javax.persistence.PreRemove;
 import javax.persistence.PreUpdate;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -40,13 +43,14 @@ import lombok.ToString;
 @ToString(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "tab_clientes")
-public class Cliente {
+@SecondaryTable(name = "tab_clientes_detalhe",pkJoinColumns = @PrimaryKeyJoinColumn(name="id_cliente"))
+public class Cliente extends EntidadeBase{
 
-	@EqualsAndHashCode.Include
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@ToString.Include
-	private Integer id;
+//	@EqualsAndHashCode.Include
+//	@Id
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
+//	@ToString.Include
+//	private Integer id;
 	
 	@ToString.Include
 	private String nome;
@@ -71,7 +75,13 @@ public class Cliente {
 	@ToString.Include
 	private Map<String, String> contatos;
 	
+	@Column(table = "tab_clientes_detalhe",name = "outros")
+	@ToString.Include
 	private String propriedadeAdicional;
+	
+	@Column(table = "tab_clientes_detalhe",name = "data_nascto")
+	@ToString.Include
+	private LocalDate dataNascto;
 	
 	@PrePersist
 	public void aoPersistir() {
