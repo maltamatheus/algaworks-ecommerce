@@ -32,7 +32,7 @@ public class IniciandoEntidadePersistencia {
 		
 		PagamentoCartao cartao = new PagamentoCartao();
 		
-		cartao.setNumero("123456");
+		cartao.setNumeroCartao("123456");
 		cartao.setStatus(EnumStatusPagamento.PROCESSANDO);
 		cartao.setPedido(pedido);
 
