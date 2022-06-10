@@ -56,6 +56,7 @@ public class ItemPedido {
 	private Integer idProduto;
 	*/
 
+	@Column(nullable = false)
 	private Integer quantidade;
 	
 }

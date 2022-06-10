@@ -25,12 +25,26 @@ import com.algaworks.ecommerce.model.Categoria;
 import com.algaworks.ecommerce.model.Cliente;
 import com.algaworks.ecommerce.model.ItemPedido;
 import com.algaworks.ecommerce.model.NotaFiscal;
+import com.algaworks.ecommerce.model.Pagamento;
 import com.algaworks.ecommerce.model.PagamentoCartao;
 import com.algaworks.ecommerce.model.Pedido;
 import com.algaworks.ecommerce.model.Produto;
 import com.algaworks.ecommerce.model.chavescompostas.ItemPedidoId;
 
 public class TestesMapeamentoDeEntidades extends EntityManagerTests {
+	
+	@Test
+	public void gerarDDL() {
+		
+	}
+	
+	@Test
+	public void buscarPagamentos() {
+		inserirPagamentoCartaoPedido();
+		List<Pagamento> pagtos = manager.createQuery("select p from Pagamento p").getResultList();
+		
+		Assert.assertFalse(pagtos.isEmpty());
+	}
 	
 	@Test
 	public void inserirPagamentoCartaoPedido() {

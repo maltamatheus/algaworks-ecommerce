@@ -14,6 +14,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
@@ -26,6 +27,7 @@ import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 
 import com.algaworks.ecommerce.enums.EnumSexo;
 import com.algaworks.ecommerce.listeners.ListenerCliente;
@@ -42,7 +44,10 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(onlyExplicitlyIncluded = true)
 @Entity
-@Table(name = "tab_clientes")
+@Table(name = "tab_clientes"
+      ,uniqueConstraints = {@UniqueConstraint(columnNames = {"cpf"},name = "unq_cpf"),
+                            @UniqueConstraint(columnNames = {"cnpj"},name = "unq_cnpj")}
+      ,indexes = @Index(columnList = "nome",name = "idx_nome_cliente"))
 @SecondaryTable(name = "tab_clientes_detalhe",pkJoinColumns = @PrimaryKeyJoinColumn(name="id_cliente"))
 public class Cliente extends EntidadeBase{
 
@@ -58,6 +63,14 @@ public class Cliente extends EntidadeBase{
 	@ToString.Include
 	private String sobrenome;
 	
+	@ToString.Include
+	@Column(length = 11)
+	private String cpf;
+	
+	@ToString.Include
+	@Column(length = 14)
+	private String cnpj;
+	
 	@Transient
 	private String nomeCompleto;
 	
@@ -66,17 +79,19 @@ public class Cliente extends EntidadeBase{
 	private EnumSexo sexo;
 	
 	@OneToMany(mappedBy = "cliente")
+	@Column(table = "tab_clientes_detalhe")
 	private List<Pedido> pedidos;
 	
 	@ElementCollection
 	@CollectionTable(name = "tab_contatos_cliente", joinColumns = @JoinColumn(name = "id_cliente"))
 	@MapKeyColumn(name = "tipo_contato")
-	@Column(name = "descricao_contato")
+	@Column(name = "descricao_contato",table = "tab_clientes_detalhe")
 	@ToString.Include
 	private Map<String, String> contatos;
 	
 	@Column(table = "tab_clientes_detalhe",name = "outros")
 	@ToString.Include
+	@Transient
 	private String propriedadeAdicional;
 	
 	@Column(table = "tab_clientes_detalhe",name = "data_nascto")

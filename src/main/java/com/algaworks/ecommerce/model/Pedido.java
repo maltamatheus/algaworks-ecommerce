@@ -29,13 +29,13 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "tab_pedidos")
-public class Pedido implements Serializable{
+public class Pedido extends EntidadeBase implements Serializable{
 
-	@EqualsAndHashCode.Include
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@ToString.Include
-	private Integer id;
+//	@EqualsAndHashCode.Include
+//	@Id
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
+//	@ToString.Include
+//	private Integer id;
 	
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "id_cliente")

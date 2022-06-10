@@ -11,6 +11,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -22,7 +23,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
-@Table(name = "tab_categorias")
+@Table(name = "tab_categorias",uniqueConstraints = @UniqueConstraint(name = "unq_categoria",columnNames = {"nome"}))
 public class Categoria extends EntidadeBase{
 
 //	@EqualsAndHashCode.Include
