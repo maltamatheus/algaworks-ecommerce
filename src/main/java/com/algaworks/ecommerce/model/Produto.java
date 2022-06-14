@@ -7,6 +7,7 @@ import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -50,20 +51,21 @@ public class Produto extends EntidadeBase{
 	
 	@ManyToMany
 	@JoinTable(name = "tab_produtos_categorias"
-	          ,joinColumns = @JoinColumn(name = "id_produto")
-	          ,inverseJoinColumns = @JoinColumn(name = "id_categoria"))
+	          ,joinColumns = @JoinColumn(name = "id_produto",foreignKey = @ForeignKey(name="fk_produto_categoria"))
+	          ,inverseJoinColumns = @JoinColumn(name = "id_categoria"),foreignKey = @ForeignKey(name="fk_categoria_produto"))
 	private List<Categoria> categorias;
 	
 	@OneToOne(mappedBy = "produto")
 	private Estoque estoque;
 	
 	@ElementCollection
-	@CollectionTable(name = "tab_tags_produto",joinColumns = @JoinColumn(name="id_produto"))
+	@CollectionTable(name = "tab_tags_produto",joinColumns = @JoinColumn(name="id_produto",foreignKey = @ForeignKey(name="fk_produto_tagsproduto")))
 	@Column(name = "tags_produto")
 	private List<String> tagsProduto;
 	
 	@ElementCollection
-	@CollectionTable(name = "tab_caracteristicas",joinColumns = @JoinColumn(name = "id_caracteristica"))
+	@CollectionTable(name = "tab_caracteristicas"
+	                ,joinColumns = @JoinColumn(name = "id_caracteristica",foreignKey = @ForeignKey(name="fk_produto_caracteristicas")))
 	@Column(name = "caracteristica")
 	private List<Caracteristica> caracteristicas;
 	

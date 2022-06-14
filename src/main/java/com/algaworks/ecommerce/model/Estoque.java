@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -32,7 +33,7 @@ public class Estoque {
 	private Integer id;
 
 	@OneToOne(optional = false)
-	@JoinColumn(name = "id_produto")
+	@JoinColumn(name = "id_produto",foreignKey = @ForeignKey(name="fk_estoque_produto"))
 	@MapsId
 	private Produto produto;
 	

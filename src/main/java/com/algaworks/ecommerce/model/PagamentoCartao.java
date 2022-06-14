@@ -37,7 +37,7 @@ public class PagamentoCartao extends Pagamento{
 //	
 //	private EnumStatusPagamento status;
 	
-	@Column(name = "numero_cartao",length=16)
+	@Column(name = "numero_cartao",length = 16)
 	private String numeroCartao;
 	
 }

@@ -35,7 +35,7 @@ public class TestesMapeamentoDeEntidades extends EntityManagerTests {
 	
 	@Test
 	public void gerarDDL() {
-		
+		System.out.println("Teste executado");
 	}
 	
 	@Test

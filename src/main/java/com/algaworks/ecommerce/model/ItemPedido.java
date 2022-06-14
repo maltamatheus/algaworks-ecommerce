@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -35,7 +36,7 @@ public class ItemPedido {
 	
 	@MapsId("idPedido")
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "id_pedido")
+	@JoinColumn(name = "id_pedido",foreignKey = @ForeignKey(name = "fk_itempedido_pedido"),nullable = false)
 	private Pedido idPedido;
 	
 	@MapsId("idProduto")

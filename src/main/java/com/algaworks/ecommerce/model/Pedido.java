@@ -7,6 +7,7 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -38,7 +39,9 @@ public class Pedido extends EntidadeBase implements Serializable{
 //	private Integer id;
 	
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "id_cliente")
+	@JoinColumn(name = "id_cliente"
+	           ,nullable = false
+	           ,foreignKey = @ForeignKey(name = "fk_pedido_cliente"))
 	@ToString.Include
 	private Cliente cliente;
 	

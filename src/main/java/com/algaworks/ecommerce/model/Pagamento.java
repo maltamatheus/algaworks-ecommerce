@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -36,7 +37,7 @@ public abstract class Pagamento extends EntidadeBase{
 
 	@MapsId
 	@OneToOne(optional = false)
-	@JoinColumn(name = "id_pedido")
+	@JoinColumn(name = "id_pedido",foreignKey = @ForeignKey(name="fk_pagamento_pedido"))
 	private Pedido pedido;
 	
 	@Column(nullable = false)

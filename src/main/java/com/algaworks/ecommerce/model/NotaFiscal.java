@@ -5,6 +5,7 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -35,7 +36,7 @@ public class NotaFiscal {
 
 	@MapsId
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "id_pedido")
+	@JoinColumn(name = "id_pedido",nullable = false,foreignKey = @ForeignKey(name="fk_notafiscal_pedido"))
 	private Pedido pedido;
 	
 	@Lob
