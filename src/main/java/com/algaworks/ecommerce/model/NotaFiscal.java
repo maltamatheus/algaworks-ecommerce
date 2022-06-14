@@ -1,5 +1,6 @@
 package com.algaworks.ecommerce.model;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -39,9 +40,13 @@ public class NotaFiscal {
 	
 	@Lob
 	@ToString.Exclude
+	@Column(name = "xml_nota",nullable = false)
 	private byte[] xml;
 	
-	@Column(name = "data_emissao_nf")
+	@Column(name = "data_emissao_nf",columnDefinition = "timestamp(14) not null")
 	private Date dataEmissao;
+	
+	@Column(name = "valor_total",nullable = false,scale=2,precision=19)
+	private BigDecimal valorTotal;
 	
 }

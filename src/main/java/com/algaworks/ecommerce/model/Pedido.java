@@ -46,11 +46,11 @@ public class Pedido extends EntidadeBase implements Serializable{
 	@ToString.Include
 	private Integer categoriaPaiId;
 	
-	@Column(name ="data_realizacao_pedido")
+	@Column(name ="data_realizacao_pedido",columnDefinition = "timestamp(14) not null")
 	@ToString.Include
 	private LocalDateTime dataPedido;
 	
-	@Column(name = "data_conclusao_pedido")
+	@Column(name = "data_conclusao_pedido",columnDefinition = "timestamp(14)")
 	@ToString.Include
 	private LocalDateTime dataConclusao;
 	
@@ -58,6 +58,7 @@ public class Pedido extends EntidadeBase implements Serializable{
 	private List<ItemPedido> itensPedido;
 	
 	@ToString.Include
+	@Column(nullable = false)
 	private EnumStatusPedido status;
 	
 	@Embedded

@@ -1,5 +1,6 @@
 package com.algaworks.ecommerce.model;
 
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
@@ -38,6 +39,7 @@ public abstract class Pagamento extends EntidadeBase{
 	@JoinColumn(name = "id_pedido")
 	private Pedido pedido;
 	
+	@Column(nullable = false)
 	private EnumStatusPagamento status;
 
 }

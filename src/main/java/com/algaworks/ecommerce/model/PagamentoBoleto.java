@@ -38,7 +38,7 @@ public class PagamentoBoleto extends Pagamento{
 //	
 //	private EnumStatusPagamento status;
 
-	@Column(name = "codigo_boleto")
+	@Column(name = "codigo_boleto",length = 47)
 	private String codigoBoleto;
 	
 }

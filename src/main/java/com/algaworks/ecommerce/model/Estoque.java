@@ -1,5 +1,7 @@
 package com.algaworks.ecommerce.model;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -34,6 +36,12 @@ public class Estoque {
 	@MapsId
 	private Produto produto;
 	
-	@Column(nullable = false)
+	@Column(columnDefinition = "integer default 0")
 	private Integer quantidade;
+	
+	@Column(name = "data_inclusao",columnDefinition = "timestamp(14) not null")
+	private LocalDateTime dtInclusao;
+	
+	@Column(name = "data_atualizacao",columnDefinition = "timestamp(14)")
+	private LocalDateTime dtAtualizacao;
 }

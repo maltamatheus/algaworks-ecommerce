@@ -36,14 +36,16 @@ public class Produto extends EntidadeBase{
 //	@GeneratedValue(strategy = GenerationType.IDENTITY)
 //	private Integer id;
 	
+	@Column(length = 100,nullable = false, unique = true)
 	private String nome;
 	
+	@Column(columnDefinition = "varchar(275) not null default 'Insira aqui a descrição do produto' ")
 	private String descricao;
 	
-	@Column(name = "preco_custo_produto")
+	@Column(name = "preco_custo_produto",scale = 2, precision = 10)
 	private BigDecimal precoCusto;
 	
-	@Column(name = "preco_venda_produto")
+	@Column(name = "preco_venda_produto",scale = 2, precision = 10)
 	private BigDecimal precoVenda;
 	
 	@ManyToMany
@@ -67,6 +69,7 @@ public class Produto extends EntidadeBase{
 	
 	@Lob
 	@ToString.Exclude
+	@Column(name = "foto_produto")
 	private byte[] fotoProduto;
 
 }

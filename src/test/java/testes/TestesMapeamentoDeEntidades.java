@@ -536,9 +536,5 @@ public class TestesMapeamentoDeEntidades extends EntityManagerTests {
 
 		System.out.println(pedidoVerify.toString());
 	}
-	
-//	public byte[] lerNotaFiscal() {
-//		return Testes
-//	}
 
 }

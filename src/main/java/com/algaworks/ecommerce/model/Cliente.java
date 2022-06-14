@@ -58,6 +58,7 @@ public class Cliente extends EntidadeBase{
 //	private Integer id;
 	
 	@ToString.Include
+	@Column(length = 100)
 	private String nome;
 	
 	@ToString.Include
@@ -76,6 +77,7 @@ public class Cliente extends EntidadeBase{
 	
 	@Enumerated(EnumType.STRING)
 	@ToString.Include
+	@Column(nullable = false)
 	private EnumSexo sexo;
 	
 	@OneToMany(mappedBy = "cliente")
