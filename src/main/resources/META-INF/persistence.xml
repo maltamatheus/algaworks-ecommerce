@@ -5,15 +5,20 @@
 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd ">
 	<persistence-unit name="cursojpa">
 		<properties>
-        <property name="javax.persistence.jdbc.url"                          value="jdbc:postgresql://systems.m2ra.com:5432/zeus"/>
-        <property name="javax.persistence.jdbc.user"                         value="usuario"                                     />
-        <property name="javax.persistence.jdbc.password"                     value="senha"                                       />
-        <property name="javax.persistence.jdbc.driver"                       value="org.postgresql.Driver"                       />
-        <property name="hibernate.show_sql"                                  value="true"                                        />
-        <property name="hibernate.format_sql"                                value="true"                                        />
-        <property name="hibernate.dialect"                                   value="org.hibernate.dialect.PostgreSQL95Dialect"   />
-        <property name="javax.persistence.sql-load-script-source"            value="/scripts/cargainicial.sql"                   />
-        <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"                             />
+        <property name="javax.persistence.jdbc.url"                          value="jdbc:postgresql://systems.m2ra.com:5432/zeus"    />
+        <property name="javax.persistence.jdbc.driver"                       value="org.postgresql.Driver"                           />
+        <property name="hibernate.show_sql"                                  value="true"                                            />
+        <property name="hibernate.format_sql"                                value="true"                                            />
+        <property name="hibernate.dialect"                                   value="org.hibernate.dialect.PostgreSQL95Dialect"       />
+        <property name="javax.persistence.sql-load-script-source"            value="/scripts/cargainicial.sql"                       />
+        <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"                                 />
+        <!-- 
+        <property name="javax.persistence.schema-generation.create-script-source" value="META-INF/scripts/ScriptCriacao.sql"         />
+        <property name="javax.persistence.schema-generation.drop-script-source"   value="META-INF/scripts/ScriptExclusao.sql"        />
+         -->                                                                                                                         
+        <property name="javax.persistence.schema-generation.scripts.action"        value="drop-and-create"                           />
+        <property name="javax.persistence.schema-generation.scritps.create-target" value="c:/CreateDB.sql"            />
+        <property name="javax.persistence.schema-generation.scritps.drop-target"   value="c:/DropDB.sql"              />
 		</properties>
 	</persistence-unit>
 </persistence>
