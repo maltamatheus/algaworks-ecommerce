@@ -1,0 +1,1 @@
+create table t1 (col1 integer,col2 text);
