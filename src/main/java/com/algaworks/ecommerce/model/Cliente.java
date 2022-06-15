@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -48,7 +49,9 @@ import lombok.ToString;
       ,uniqueConstraints = {@UniqueConstraint(columnNames = {"cpf"},name = "unq_cpf"),
                             @UniqueConstraint(columnNames = {"cnpj"},name = "unq_cnpj")}
       ,indexes = @Index(columnList = "nome",name = "idx_nome_cliente"))
-@SecondaryTable(name = "tab_clientes_detalhe",pkJoinColumns = @PrimaryKeyJoinColumn(name="id_cliente"))
+@SecondaryTable(name = "tab_clientes_detalhe"
+               ,pkJoinColumns = @PrimaryKeyJoinColumn(name="id_cliente")
+               ,foreignKey = @ForeignKey(name="fk_clientes_detalhe_cliente"))
 public class Cliente extends EntidadeBase{
 
 //	@EqualsAndHashCode.Include

@@ -51,8 +51,8 @@ public class Produto extends EntidadeBase{
 	
 	@ManyToMany
 	@JoinTable(name = "tab_produtos_categorias"
-	          ,joinColumns = @JoinColumn(name = "id_produto",foreignKey = @ForeignKey(name="fk_produto_categoria"))
-	          ,inverseJoinColumns = @JoinColumn(name = "id_categoria"),foreignKey = @ForeignKey(name="fk_categoria_produto"))
+	          ,joinColumns = @JoinColumn(name = "id_produto",foreignKey = @ForeignKey(name="fk_produto_categoria"),nullable = false)
+	          ,inverseJoinColumns = @JoinColumn(name = "id_categoria",foreignKey = @ForeignKey(name="fk_categoria_produto"),nullable = false))
 	private List<Categoria> categorias;
 	
 	@OneToOne(mappedBy = "produto")
