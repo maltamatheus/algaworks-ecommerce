@@ -18,7 +18,7 @@ import lombok.ToString;
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
-@AllArgsConstructor
+@AllArgsConstructor	
 @Embeddable
 @ToString
 public class ItemPedidoId implements Serializable{

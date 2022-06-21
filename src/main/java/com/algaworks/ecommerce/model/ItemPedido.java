@@ -1,15 +1,11 @@
 package com.algaworks.ecommerce.model;
 
-import java.math.BigDecimal;
+import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
@@ -29,7 +25,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "tab_itens_pedido")
-public class ItemPedido {
+public class ItemPedido implements Serializable{
 
 	@EmbeddedId
     private ItemPedidoId id;
@@ -41,7 +37,7 @@ public class ItemPedido {
 	
 	@MapsId("idProduto")
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "id_produto")
+	@JoinColumn(name = "id_produto",foreignKey = @ForeignKey(name = "fk_itempedido_produto"),nullable=false)
 	private Produto idProduto;
 
 	/*

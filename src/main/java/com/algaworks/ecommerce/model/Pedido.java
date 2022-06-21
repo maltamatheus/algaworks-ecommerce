@@ -7,10 +7,9 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -57,11 +56,14 @@ public class Pedido extends EntidadeBase implements Serializable{
 	@ToString.Include
 	private LocalDateTime dataConclusao;
 	
+	@Column(name = "data_atualizacao_pedido",columnDefinition = "timestamp(14) default now()")
+	private LocalDateTime dataAtualizacao;
+	
 	@OneToMany(mappedBy = "idPedido")
 	private List<ItemPedido> itensPedido;
 	
-	@ToString.Include
 	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
 	private EnumStatusPedido status;
 	
 	@Embedded
