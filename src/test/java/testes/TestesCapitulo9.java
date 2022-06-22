@@ -11,21 +11,102 @@ import com.algaworks.ecommerce.dto.ProdutoDTO;
 import com.algaworks.ecommerce.model.Produto;
 
 public class TestesCapitulo9 extends EntityManagerTests {
-	
+
 	@Test
-	public void getSelectComOuterJoin() {
+	public void getSelectComMaisUmaEntidade() {
 		StringBuilder sql = new StringBuilder();
-		sql.append("select prd.nome,");
-		sql.append("prd.descricao,");
-		sql.append("cat.nome ");
-		sql.append(" from Produto prd ");
-		sql.append(" left join Categoria cat on prd.categorias = cat.categoriasFilho");
+		sql.append("select prd.nome, ");
+		sql.append("prd.descricao, ");
+		sql.append("cat.nome,");
+		sql.append("ctp.nome");
+		sql.append("from Produto prd ");
+		sql.append("right join prd.categorias cat ");
+		sql.append("right join Categoria ctp ");
 		
 		String jpql = sql.toString();
 		
 		TypedQuery<Object[]> objetos = manager.createQuery(jpql, Object[].class);
 		
 		List<Object[]> res = objetos.getResultList();
+		
+		for (Object[] o : res) {
+			
+			int chave = 0;
+			
+			String produto = (String) o[chave++];
+			String descricao = (String) o[chave++];
+			String categoria = (String) o[chave++];
+			String categoriaPai = (String) o[chave++];
+			
+			produto = (produto != null) ? produto : "Sem Produto"; 
+			descricao = (descricao!= null) ? descricao : "Sem Descrição";
+			categoria = (categoria!= null) ? categoria : "Sem Categoria";
+			categoriaPai = (categoriaPai!= null) ? categoriaPai : "Sem Categoria Pai";
+			
+			System.out.println(produto + "- " + descricao + "- " + categoria + "- " + categoriaPai);
+		}
+	}
+	
+	@Test
+	public void getSelectComRightJoin() {
+		StringBuilder sql = new StringBuilder();
+		sql.append("select prd.nome, ");
+		sql.append("prd.descricao, ");
+		sql.append("cat.nome ");
+		sql.append("from Produto prd ");
+		sql.append("right join prd.categorias cat ");
+		
+		String jpql = sql.toString();
+		
+		TypedQuery<Object[]> objetos = manager.createQuery(jpql, Object[].class);
+		
+		List<Object[]> res = objetos.getResultList();
+		
+		for (Object[] o : res) {
+			
+			int chave = 0;
+			
+			String produto = (String) o[chave++];
+			String descricao = (String) o[chave++];
+			String categoria = (String) o[chave++];
+			
+			produto = (produto != null) ? produto : "Sem Produto"; 
+			descricao = (descricao!= null) ? descricao : "Sem Descrição";
+			categoria = (categoria!= null) ? categoria : "Sem Categoria";
+			
+			System.out.println(produto + "- " + descricao + "- " + categoria);
+		}
+	}
+	
+	@Test
+	public void getSelectComLeftJoin() {
+		StringBuilder sql = new StringBuilder();
+		sql.append("select prd.nome, ");
+		sql.append("prd.descricao, ");
+		sql.append("cat.nome ");
+		sql.append("from Produto prd ");
+		sql.append("left join prd.categorias cat ");
+		
+		String jpql = sql.toString();
+		
+		TypedQuery<Object[]> objetos = manager.createQuery(jpql, Object[].class);
+		
+		List<Object[]> res = objetos.getResultList();
+		
+		for (Object[] o : res) {
+			
+			int chave = 0;
+			
+			String produto = (String) o[chave++];
+			String descricao = (String) o[chave++];
+			String categoria = (String) o[chave++];
+			
+			produto = (produto != null) ? produto : "Sem Produto"; 
+			descricao = (descricao!= null) ? descricao : "Sem Descrição";
+			categoria = (categoria!= null) ? categoria : "Sem Categoria";
+			
+			System.out.println(produto + "- " + descricao + "- " + categoria);
+		}
 	}
 	
 	@Test
