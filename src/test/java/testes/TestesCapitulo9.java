@@ -8,20 +8,44 @@ import javax.persistence.TypedQuery;
 import org.junit.Test;
 
 import com.algaworks.ecommerce.dto.ProdutoDTO;
+import com.algaworks.ecommerce.model.Pedido;
 import com.algaworks.ecommerce.model.Produto;
 
 public class TestesCapitulo9 extends EntityManagerTests {
+	
+	@Test
+	public void testeFetchJoin() {
+		
+		StringBuilder sql = new StringBuilder();
+		
+		sql.append(" select ped                       ");
+		sql.append(" from Pedido ped                  ");
+		sql.append("    left join ped.pagamento pag   ");
+		sql.append("         join ped.cliente cli     ");
+		sql.append("    left join ped.notasPedido nfp ");
+		
+		TypedQuery<Pedido> tq = manager.createQuery(sql.toString(),Pedido.class);
+		
+		List<Pedido> pedidos = tq.getResultList();
+		
+		for (Pedido pedido : pedidos) {
+			System.out.println(pedido.getItensPedido());
+		}
+		
+	}
 
 	@Test
 	public void getSelectComMaisUmaEntidade() {
 		StringBuilder sql = new StringBuilder();
-		sql.append("select prd.nome, ");
-		sql.append("prd.descricao, ");
-		sql.append("cat.nome,");
-		sql.append("ctp.nome");
+		sql.append("select prd.nome ");
+		sql.append(",prd.descricao ");
+		sql.append(",cat.nome ");
+		sql.append(",ctp.nome "); // Categoria Pai
+		sql.append(",ctf.nome ");  // Categoria Filho
 		sql.append("from Produto prd ");
 		sql.append("right join prd.categorias cat ");
-		sql.append("right join Categoria ctp ");
+		sql.append("left join cat.categoriaPai ctp ");
+		sql.append("left  join cat.categoriasFilho ctf ");
 		
 		String jpql = sql.toString();
 		
@@ -29,21 +53,28 @@ public class TestesCapitulo9 extends EntityManagerTests {
 		
 		List<Object[]> res = objetos.getResultList();
 		
+		System.out.println();
+
+		int volta = 1;
+		
 		for (Object[] o : res) {
-			
+
 			int chave = 0;
 			
 			String produto = (String) o[chave++];
 			String descricao = (String) o[chave++];
 			String categoria = (String) o[chave++];
 			String categoriaPai = (String) o[chave++];
+			String categoriaFilho = (String) o[chave++];
 			
 			produto = (produto != null) ? produto : "Sem Produto"; 
 			descricao = (descricao!= null) ? descricao : "Sem Descrição";
 			categoria = (categoria!= null) ? categoria : "Sem Categoria";
 			categoriaPai = (categoriaPai!= null) ? categoriaPai : "Sem Categoria Pai";
+			categoriaFilho = (categoriaFilho != null) ? categoriaFilho : "Sem Categoria Filho";
 			
-			System.out.println(produto + "- " + descricao + "- " + categoria + "- " + categoriaPai);
+			System.out.println(volta + " - " + produto + "- " + descricao + "- " + categoria + "- " + categoriaPai + "- " + categoriaFilho);
+			volta++;
 		}
 	}
 	
