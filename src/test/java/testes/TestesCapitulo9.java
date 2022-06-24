@@ -14,6 +14,21 @@ import com.algaworks.ecommerce.model.Produto;
 public class TestesCapitulo9 extends EntityManagerTests {
 	
 	@Test
+	public void testePathExpressions() {
+		String jpql = "select p.categorias.nome from Produto p where p.nome = 'Kindle' ";
+		
+		TypedQuery<Object[]> tq = manager.createQuery(jpql, Object[].class);
+		
+		List<Object[]> res = tq.getResultList();
+		
+		for (Object[] o : res) {
+			
+			System.out.println(o[0]);
+			
+		}
+	}
+	
+	@Test
 	public void testeFetchJoin() {
 		
 		StringBuilder sql = new StringBuilder();
