@@ -21,7 +21,7 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@ToString
+@ToString(onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "tab_categorias",uniqueConstraints = @UniqueConstraint(name = "unq_categoria",columnNames = {"nome"}))

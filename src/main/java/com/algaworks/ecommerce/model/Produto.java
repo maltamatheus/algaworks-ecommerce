@@ -1,6 +1,7 @@
 package com.algaworks.ecommerce.model;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CollectionTable;
@@ -14,6 +15,8 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 
 import lombok.EqualsAndHashCode;
@@ -70,5 +73,9 @@ public class Produto extends EntidadeBase{
 	@ToString.Exclude
 	@Column(name = "foto_produto")
 	private byte[] fotoProduto;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "data_inclusao_cadastro" ,columnDefinition = "timestamp(17)")
+	private Date dataInclusaoCadastro;
 
 }
