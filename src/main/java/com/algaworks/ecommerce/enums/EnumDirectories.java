@@ -7,5 +7,6 @@ public enum EnumDirectories {
 			return "src/test/resources/commons/xml";
 		}
 	};
+	
 	public abstract String getDiretorio();
 }

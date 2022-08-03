@@ -1,6 +1,12 @@
 package testes;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -15,6 +21,249 @@ import com.algaworks.ecommerce.model.Categoria;
 import com.algaworks.ecommerce.model.Produto;
 
 public class TestesCapitulo9 extends EntityManagerTests {
+
+	@Test
+	public void carregandoArquivosEmLote() {
+		
+		List<Produto> produtos = new ArrayList<Produto>();
+
+		try {
+		
+			File arq = new File("src//main//resources//files//ArqCargaProdutos.txt");
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(arq)));
+			
+			String l = null;
+			
+			while((l = reader.readLine()) != null) {
+				Produto p = new Produto();
+
+				p.setNome(l.split(";")[0]);
+				p.setDescricao(l.split(";")[1]);
+				p.setPrecoVenda(new BigDecimal(Long.valueOf(l.split(";")[2])));
+				
+				produtos.add(p);
+			}
+			
+			reader.close();
+			
+			int inserts = 0;
+
+			manager.getTransaction().begin();
+			
+			for (Produto produto : produtos) {
+				
+				manager.persist(produto);
+				
+				inserts++;
+				
+				if(inserts < 5) {
+					manager.getTransaction().commit();
+					
+					inserts = 0;
+				}
+
+			}
+			manager.getTransaction().commit(); //Commit das últimas linhas
+			
+			manager.close();
+			
+		} catch (FileNotFoundException e) {
+			
+			e.printStackTrace();
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+	}
+	
+	@Test
+	public void usandoSubQueryComAny() {
+		
+		String jpql = "select p.descricao, c.nome "
+				+ "from Produto p join p.categorias c "
+				+ "where c.nome = any (select nome from Categoria)";
+		
+		TypedQuery<Object[]> query = manager.createQuery(jpql, Object[].class);
+//		query.setParameter("categorias", categorias);
+		List<Object[]> res = query.getResultList();
+		
+		res.forEach(r-> {
+			int i = 0;
+			System.out.println(r[i++] + " | " + r[i++]);
+		});
+	}
+	
+	@Test
+	public void usandoSubQueryComAll() {
+		
+//		String jpqlLista = "select c.nome from Categoria c where c.id in (1,3)";
+//		TypedQuery<String> queryCategorias = manager.createQuery(jpqlLista, String.class);
+//		List<String> categorias = queryCategorias.getResultList();
+
+		String jpql = "select p.descricao, c.nome "
+				+ "from Produto p join p.categorias c "
+//				+ "where c.nome = all (select nome from Categoria where nome in (:categorias)) ";
+				+ "where c.nome = all (select nome from Categoria where id = 1)";
+		
+		TypedQuery<Object[]> query = manager.createQuery(jpql, Object[].class);
+//		query.setParameter("categorias", categorias);
+		List<Object[]> res = query.getResultList();
+		
+		res.forEach(r-> {
+			int i = 0;
+			System.out.println(r[i++] + " | " + r[i++]);
+		});
+	}
+	
+	@Test
+	public void usandoSubQueryComExists() {
+		
+		String jpqlLista = "select c.nome from Categoria c where c.id in (1,3)";
+		TypedQuery<String> queryCategorias = manager.createQuery(jpqlLista, String.class);
+		List<String> categorias = queryCategorias.getResultList();
+
+		String jpql = "select p.descricao, c.nome "
+				+ "from Produto p join p.categorias c "
+				+ "where exists (select nome from Categoria where nome in (:categorias)) ";
+		
+		TypedQuery<Object[]> query = manager.createQuery(jpql, Object[].class);
+		query.setParameter("categorias", categorias);
+		List<Object[]> res = query.getResultList();
+		
+		res.forEach(r-> {
+			int i = 0;
+			System.out.println(r[i++] + " | " + r[i++]);
+		});
+	}
+	
+	@Test
+	public void funcaoDistinct() {
+		
+		String jpql = "select distinct c.nome from Categoria c join c.produtos";
+		TypedQuery<String> query = manager.createQuery(jpql, String.class);
+		List<String> res = query.getResultList();
+		
+		res.forEach(r -> System.out.println(r));
+	}
+	
+	@Test
+	public void funcaoIn() {
+		
+		String jpqlLista = "select c.nome from Categoria c where c.id in (1,3)";
+		TypedQuery<String> queryCategorias = manager.createQuery(jpqlLista, String.class);
+		List<String> categorias = queryCategorias.getResultList();
+
+		String jpql = "select p.descricao, c.nome "
+				+ "from Produto p join p.categorias c "
+				+ "where c.nome in (:categorias) ";
+		
+		TypedQuery<Object[]> query = manager.createQuery(jpql, Object[].class);
+		query.setParameter("categorias", categorias);
+		List<Object[]> res = query.getResultList();
+		
+		res.forEach(r-> {
+			int i = 0;
+			System.out.println(r[i++] + " | " + r[i++]);
+		});
+	}
+	
+	@Test
+	public void funcaoCase() {
+
+		String jpql = "select p.descricao, "
+				+ "case when c.nome like 'Eletr%' then 'PRECO TEM QUE SER MÉDIO'"
+				+ "     when c.nome like 'Acessórios%' then 'PRECO TEM QUE SER BARATO' "
+				+ " else 'PRECO JÁ É MAIS ALTO' end as tipoPreco from Produto p join p.categorias c";
+		
+		TypedQuery<Object[]> query = manager.createQuery(jpql, Object[].class);
+		List<Object[]> res = query.getResultList();
+		
+		res.forEach(r-> {
+			int i = 0;
+			System.out.println(r[i++] + " | " + r[i++]);
+		});
+	}
+
+	@Test
+	public void funcoesAgregadorasHaving() {
+
+		String jpql = "select c.nome, sum(p.precoVenda) "
+				+ "from Categoria c join c.produtos p group by c.nome"
+				+ " having sum(p.precoVenda) > (select sum(pr.precoVenda) "
+				+ "from Produto pr join pr.categorias ca where ca.nome like 'Acessórios%')";
+		
+		TypedQuery<Object[]> query = manager.createQuery(jpql, Object[].class);
+		List<Object[]> res = query.getResultList();
+		
+		res.forEach(r-> {
+			int i = 0;
+			System.out.println(r[i++] + " | " + r[i++]); 
+		});
+	}
+	
+	@Test
+	public void funcoesAgregadorasGroupBy() {
+		//avg, sum,count,max,min
+		String jpql = "select c.nome, sum(p.precoVenda) "
+				+ "from Categoria c join c.produtos p group by c.nome";
+		
+		TypedQuery<Object[]> query = manager.createQuery(jpql, Object[].class);
+		List<Object[]> res = query.getResultList();
+		
+		res.forEach(r-> {
+			int i = 0;
+			System.out.println(r[i++] + " | " + r[i++]);
+		});
+	}
+	
+	@Test
+	public void funcoesAgregadoras() {
+		//avg, sum,count,max,min
+		String jpql = "select avg(p.precoVenda), sum(p.precoVenda),count(p.precoVenda),max(p.precoVenda),min(p.precoVenda) from Produto p";
+		
+		TypedQuery<Object[]> query = manager.createQuery(jpql, Object[].class);
+		List<Object[]> res = query.getResultList();
+		
+		res.forEach(r-> {
+			int i = 0;
+			System.out.println(r[i++] + " | " + r[i++] + " | " + r[i++] + " | " + r[i++] + " | " + r[i++]);
+		});
+	}
+
+	@Test
+	public void funcoesNumericas() {
+		
+//		String jpql = "select size(p.categorias), p.id, 2 from Produto p";
+		String jpql = "select size(c.produtos) ,c.id, 2 from Categoria c";
+		
+		TypedQuery<Object[]> query = manager.createQuery(jpql, Object[].class);
+//		TypedQuery<Produto> query = manager.createQuery(jpql, Produto.class);
+//		TypedQuery<Categoria> query = manager.createQuery(jpql, Categoria.class);
+		
+		List<Object[]> res = query.getResultList();
+//		List<Produto> res = query.getResultList();
+//		List<Categoria> res = query.getResultList();
+		
+		res.forEach(r -> System.out.println(r[0] + " | " + r[1] + " | " + r[2]));
+//		res.forEach(r -> System.out.println(r.getNome() + " | " + r.getDescricao() + " | " + r.getDataInclusaoCadastro()));
+	}
+	
+	@Test
+	public void funcoesData() {
+		
+		String jpql = "select hour(p.dataInclusaoCadastro), minute(dataInclusaoCadastro), second(dataInclusaoCadastro) from Produto p";
+		
+		TypedQuery<Object[]> query = manager.createQuery(jpql, Object[].class);
+//		TypedQuery<Produto> query = manager.createQuery(jpql, Produto.class);
+		
+		List<Object[]> res = query.getResultList();
+//		List<Produto> res = query.getResultList();
+		
+		res.forEach(r -> System.out.println(r[0] + " | " + r[1] + " | " + r[2]));
+//		res.forEach(r -> System.out.println(r.getNome() + " | " + r.getDescricao() + " | " + r.getDataInclusaoCadastro()));
+	}
 
 	@Test
 	public void funcoesString() {
@@ -64,7 +313,7 @@ public class TestesCapitulo9 extends EntityManagerTests {
 
 		// Fórmula: IdxInicio = totalPorPagina * (numPagina - 1)
 		/*
-		 * 5ª pag Total por página = 5 IdxInicio = 36
+		 * 5ª pag / Total por página = 5 / IdxInicio = 36
 		 */
 
 		for (int i = 1; i <= objetos.getResultList().size(); i++) {
