@@ -21,6 +21,62 @@ import com.algaworks.ecommerce.model.Categoria;
 import com.algaworks.ecommerce.model.Produto;
 
 public class TestesCapitulo9 extends EntityManagerTests {
+	
+	@Test
+	public void atualizacaoEmLote1() {
+		
+		manager.getTransaction().begin();
+
+		String jpql = "update Produto p set p.nome = replace(p.nome,'0',''), p.descricao = replace(p.descricao,'0','')"
+				+ " where p.nome like 'Produto 0%' ";
+		
+		Query query = manager.createQuery(jpql);
+		
+		int ret = query.executeUpdate();
+		
+		manager.getTransaction().commit();
+		
+		System.out.println(ret);
+	}
+
+	
+	@Test
+	public void atualizacaoEmLote2() {
+		
+		manager.getTransaction().begin();
+
+		String jpql = "update Produto p set p.nome = replace(p.nome,:caracter,''), p.descricao = replace(p.descricao,:caracter,'')"
+				+ " where p.nome like 'Produto :caracter%' ";
+		
+		Query query = manager.createQuery(jpql);
+		
+		query.setParameter("caracter", "0");
+		
+		int ret = query.executeUpdate();
+		
+		manager.getTransaction().commit();
+		
+		System.out.println(ret);
+	}
+
+	@Test
+	public void atualizacaoEmLote3() {
+		
+		carregandoArquivosEmLote();
+
+		manager.getTransaction().begin();
+
+		String jpql = "update Produto p set p.nome = replace(p.nome,'0',''), p.descricao = replace(p.descricao,'0','')"
+				+ " where p.nome like 'Produto 0%' ";
+		
+		Query query = manager.createQuery(jpql);
+		
+		int ret = query.executeUpdate();
+		
+		manager.getTransaction().commit();
+		
+		System.out.println(ret);
+	}
 
 	@Test
 	public void carregandoArquivosEmLote() {
@@ -40,7 +96,8 @@ public class TestesCapitulo9 extends EntityManagerTests {
 
 				p.setNome(l.split(";")[0]);
 				p.setDescricao(l.split(";")[1]);
-				p.setPrecoVenda(new BigDecimal(Long.valueOf(l.split(";")[2])));
+				p.setPrecoVenda(new BigDecimal(l.split(";")[2]));
+				p.setDataInclusaoCadastro(new Date());
 				
 				produtos.add(p);
 			}
@@ -58,7 +115,9 @@ public class TestesCapitulo9 extends EntityManagerTests {
 				inserts++;
 				
 				if(inserts < 5) {
-					manager.getTransaction().commit();
+					manager.flush();
+//					manager.getTransaction().commit();
+//					manager.getTransaction().begin();
 					
 					inserts = 0;
 				}
@@ -74,6 +133,7 @@ public class TestesCapitulo9 extends EntityManagerTests {
 			
 		} catch (Exception e) {
 			// TODO: handle exception
+			e.printStackTrace();
 		}
 		
 	}
