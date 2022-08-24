@@ -21,6 +21,57 @@ import com.algaworks.ecommerce.model.Categoria;
 import com.algaworks.ecommerce.model.Produto;
 
 public class TestesCapitulo9 extends EntityManagerTests {
+
+	@Test
+	public void testeNamedQueryArqCategoriasXml() {
+		TypedQuery<String> query = manager.createNamedQuery("Categoria.listarSomenteNome", String.class);
+		query.getResultList().forEach(nomes -> System.out.println(nomes));
+	}
+	
+	@Test
+	public void testeNamedQueryArqOrmXml() {
+		TypedQuery<String> query = manager.createNamedQuery("Produto.listarSomenteNome", String.class);
+		query.getResultList().forEach(nomes -> System.out.println(nomes));
+	}
+	
+	@Test
+	public void testeNamedQueryNomeCategoria() {
+		
+		TypedQuery<Produto> query = manager.createNamedQuery("Produto.listarPorNomeCategoria", Produto.class);
+		query.setParameter("pNome", "Eletrônicos");
+		query.getResultList().forEach(rec -> System.out.println(rec.toString()));
+	}
+	
+	@Test
+	public void testeNamedQueryNomeProduto() {
+		
+		TypedQuery<Produto> query = manager.createNamedQuery("Produto.listarPorNomeProduto", Produto.class);
+		query.setParameter("pNome", "Produto 1");
+		System.out.println(query.getSingleResult().toString());
+	}
+	
+	@Test
+	public void removendoObjetosEmLote() {
+	
+		String jpql = "delete from Produto p where 1 = 1 and p.nome like concat('Produto ',:condicao,'%') ";
+		
+//		String jpql = "delete from Produto p where p.nome like 'Produto 0%' ";
+		
+		manager.getTransaction().begin();
+		
+		Query query = manager.createQuery(jpql);
+		
+		query.setParameter("condicao", "0");
+		
+		int ret = query.executeUpdate();
+		
+		manager.getTransaction().commit();
+		
+		manager.close();
+		
+		System.out.println(ret);
+		
+	}
 	
 	@Test
 	public void atualizacaoEmLote1() {
@@ -46,7 +97,7 @@ public class TestesCapitulo9 extends EntityManagerTests {
 		manager.getTransaction().begin();
 
 		String jpql = "update Produto p set p.nome = replace(p.nome,:caracter,''), p.descricao = replace(p.descricao,:caracter,'')"
-				+ " where p.nome like 'Produto :caracter%' ";
+				+ " where p.nome like concat('Produto ', :caracter,'%') ";
 		
 		Query query = manager.createQuery(jpql);
 		

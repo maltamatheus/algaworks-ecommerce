@@ -13,6 +13,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -27,6 +29,10 @@ import lombok.ToString;
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@NamedQueries({
+	@NamedQuery(name = "Produto.listarPorNomeProduto",query = "select p from Produto p where p.nome = :pNome"),
+	@NamedQuery(name = "Produto.listarPorNomeCategoria",query = "select p from Produto p join p.categorias c where c.nome = :pNome")
+})
 @ToString
 @Entity
 @Table(name = "tab_produtos",uniqueConstraints = @UniqueConstraint(name = "unq_produto01",columnNames = {"nome"}))
