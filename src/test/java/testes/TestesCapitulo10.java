@@ -13,6 +13,7 @@ import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
@@ -23,11 +24,35 @@ import org.junit.Test;
 
 import com.algaworks.ecommerce.dto.ProdutoDTO;
 import com.algaworks.ecommerce.model.Categoria;
+import com.algaworks.ecommerce.model.Categoria_;
 import com.algaworks.ecommerce.model.Produto;
 import com.algaworks.ecommerce.model.Produto_;
 
 public class TestesCapitulo10 extends EntityManagerTests {
 
+	@Test
+	public void usandoFuncoesColecoes() {
+	
+		CriteriaBuilder criteriaBuilder = manager.getCriteriaBuilder();
+		CriteriaQuery   criteriaQuery = criteriaBuilder.createQuery(Tuple.class);
+		Root<Categoria> root = criteriaQuery.from(Categoria.class);
+
+		criteriaQuery.multiselect(
+				root.get(Categoria_.nome)
+			   ,criteriaBuilder.size(root.get(Categoria_.produtos).alias("totalProdutos"))
+				);
+        
+		TypedQuery<Tuple> typedQuery = manager.createQuery(criteriaQuery);
+		
+		List<Tuple> lista = typedQuery.getResultList();
+		
+		int i = 0;
+		
+		System.out.println();
+		
+		lista.forEach(o->System.out.println(o.get("nome") + " | " + o.get("totalProdutos")));		
+	}
+	
 	@Test
 	public void usandoFuncoesNumericas() {
 	
