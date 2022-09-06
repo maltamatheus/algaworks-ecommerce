@@ -29,6 +29,32 @@ import com.algaworks.ecommerce.model.Produto_;
 public class TestesCapitulo10 extends EntityManagerTests {
 
 	@Test
+	public void usandoFuncoesNumericas() {
+	
+		CriteriaBuilder criteriaBuilder = manager.getCriteriaBuilder();
+		CriteriaQuery   criteriaQuery = criteriaBuilder.createQuery(Tuple.class);
+		Root<Produto> root = criteriaQuery.from(Produto.class);
+
+		criteriaQuery.multiselect(
+				root.get(Produto_.nome).alias("nome") 
+			   ,root.get(Produto_.descricao).alias("descricao")
+			   ,root.get(Produto_.precoVenda).alias("precoVenda")
+//			   ,criteriaBuilder.sqrt(root.get(Produto_.precoVenda)).alias("raizQuadradaPrecoVenda")
+			   ,criteriaBuilder.mod(Integer.valueOf(root.get(Produto_.precoVenda.toString())),2)
+				);
+        
+		TypedQuery<Tuple> typedQuery = manager.createQuery(criteriaQuery);
+		
+		List<Tuple> lista = typedQuery.getResultList();
+		
+		int i = 0;
+		
+		System.out.println();
+		
+		lista.forEach(o->System.out.println(o.get("nome") + " | " + o.get("descricao") + " | " + o.get("precoVenda") + " | " + o.get("raizQuadradaPrecoVenda")));		
+	}
+	
+	@Test
 	public void usandoFuncoesData() {
 	
 		CriteriaBuilder criteriaBuilder = manager.getCriteriaBuilder();
@@ -36,22 +62,17 @@ public class TestesCapitulo10 extends EntityManagerTests {
 		Root<Produto> root = criteriaQuery.from(Produto.class);
 
 		criteriaQuery.multiselect(
-				
 				root.get(Produto_.nome).alias("nome"), 
 				root.get(Produto_.descricao).alias("descricao"),
-				root.get(Produto_.dataInclusaoCadastro).alias("dtInclusao")
-				
+				root.get(Produto_.dataInclusaoCadastro).alias("dtInclusao"));
+        
+		criteriaQuery.where(criteriaBuilder.between(
+						root.get(Produto_.dataInclusaoCadastro), 
+								java.sql.Date.valueOf(LocalDate.now()),
+								java.sql.Date.valueOf(LocalDate.now().plusMonths(3))
+						)
 				);
 
-		LocalDate tresMeses = LocalDate.now().plusMonths(3);
-		
-		criteriaQuery.where(
-				criteriaBuilder.between(root.get(Produto_.id),1,5),
-				criteriaBuilder.between(root.get(Produto_.dataInclusaoCadastro).as(java.sql.Date.class),
-						criteriaBuilder.currentDate(),
-						java.sql.Date.valueOf(tresMeses))
-				);
-		
 		TypedQuery<Tuple> typedQuery = manager.createQuery(criteriaQuery);
 		
 		List<Tuple> lista = typedQuery.getResultList();
