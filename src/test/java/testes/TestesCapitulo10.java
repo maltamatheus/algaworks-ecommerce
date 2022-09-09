@@ -31,6 +31,54 @@ import com.algaworks.ecommerce.model.Produto_;
 public class TestesCapitulo10 extends EntityManagerTests {
 
 	@Test
+	public void usandoCase(){
+		CriteriaBuilder criteriaBuilder = manager.getCriteriaBuilder();
+		CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(Tuple.class);
+		Root<Produto> root = criteriaQuery.from(Produto.class);
+		
+		criteriaQuery.multiselect(
+				 root.get(Produto_.nome).alias("nome_produto")
+				,criteriaBuilder.selectCase(root.get(Produto_.nome))
+				.when(criteriaBuilder.like(root.get(Produto_.nome), "Produto %"),"Produto Novo")
+				.otherWise("Produto Antigo")).alias("classificacao_produto");
+		
+		TypedQuery<Tuple> typedQuery = manager.createQuery(criteriaQuery);
+		List<Tuple> res = typedQuery.getResultList();
+		res.forEach(t -> System.out.println(t.get("nome_produto") + " | " + t.get("classificacao_produto")));
+	}
+	
+	@Test
+	public void usandoFuncoesAgregacao() {
+	
+		CriteriaBuilder criteriaBuilder = manager.getCriteriaBuilder();
+		CriteriaQuery   criteriaQuery = criteriaBuilder.createQuery(Tuple.class);
+		Root<Produto> root = criteriaQuery.from(Produto.class);
+		Join<Produto,Categoria> joinProdutoCategoria = root.join(Produto_.categorias);
+
+		criteriaQuery.multiselect(
+				joinProdutoCategoria.get(Categoria_.nome).alias("categoria")
+			   ,criteriaBuilder.sum(root.get(Produto_.precoVenda)).alias("totalProdutos")
+				);
+		criteriaQuery.groupBy(joinProdutoCategoria.get(Categoria_.nome));
+		
+		criteriaQuery.having(
+				criteriaBuilder.greaterThan(
+						criteriaBuilder.sum(root.get(Produto_.precoVenda)) 
+					   ,new BigDecimal(3000))
+				);
+        
+		TypedQuery<Tuple> typedQuery = manager.createQuery(criteriaQuery);
+		
+		List<Tuple> lista = typedQuery.getResultList();
+		
+		int i = 0;
+		
+		System.out.println();
+		
+		lista.forEach(o->System.out.println(o.get("categoria") + " | " + o.get("totalProdutos")));		
+	}
+	
+	@Test
 	public void usandoFuncoesColecoes() {
 	
 		CriteriaBuilder criteriaBuilder = manager.getCriteriaBuilder();
@@ -38,8 +86,8 @@ public class TestesCapitulo10 extends EntityManagerTests {
 		Root<Categoria> root = criteriaQuery.from(Categoria.class);
 
 		criteriaQuery.multiselect(
-				root.get(Categoria_.nome)
-			   ,criteriaBuilder.size(root.get(Categoria_.produtos).alias("totalProdutos"))
+				root.get(Categoria_.nome).alias("nome")
+			   ,criteriaBuilder.size(root.get(Categoria_.produtos)).alias("totalProdutos")
 				);
         
 		TypedQuery<Tuple> typedQuery = manager.createQuery(criteriaQuery);
@@ -65,8 +113,8 @@ public class TestesCapitulo10 extends EntityManagerTests {
 			   ,root.get(Produto_.descricao).alias("descricao")
 			   ,root.get(Produto_.precoVenda).alias("precoVenda")
 //			   ,criteriaBuilder.sqrt(root.get(Produto_.precoVenda)).alias("raizQuadradaPrecoVenda")
-			   ,criteriaBuilder.mod(Integer.valueOf(root.get(Produto_.precoVenda.toString())),2)
-				);
+			   ,criteriaBuilder.mod(root.get(Produto_.precoVenda).as(Integer.class),2).alias("restoDivisao")
+			   );
         
 		TypedQuery<Tuple> typedQuery = manager.createQuery(criteriaQuery);
 		
@@ -76,7 +124,8 @@ public class TestesCapitulo10 extends EntityManagerTests {
 		
 		System.out.println();
 		
-		lista.forEach(o->System.out.println(o.get("nome") + " | " + o.get("descricao") + " | " + o.get("precoVenda") + " | " + o.get("raizQuadradaPrecoVenda")));		
+//		lista.forEach(o->System.out.println(o.get("nome") + " | " + o.get("descricao") + " | " + o.get("precoVenda") + " | " + o.get("raizQuadradaPrecoVenda")));
+		lista.forEach(o->System.out.println(o.get("nome") + " | " + o.get("descricao") + " | " + o.get("precoVenda") + " | " + o.get("restoDivisao")));
 	}
 	
 	@Test
