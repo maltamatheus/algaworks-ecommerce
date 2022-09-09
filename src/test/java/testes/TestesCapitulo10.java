@@ -29,6 +29,25 @@ import com.algaworks.ecommerce.model.Produto;
 import com.algaworks.ecommerce.model.Produto_;
 
 public class TestesCapitulo10 extends EntityManagerTests {
+	
+	@Test
+	public void usandoIn() {
+		CriteriaBuilder criteriaBuilder = manager.getCriteriaBuilder();
+		CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(Tuple.class);
+		Root<Produto> rootProduto = criteriaQuery.from(Produto.class);
+		Root<Categoria> rootCategoria = criteriaQuery.from(Categoria.class);
+
+		criteriaQuery.multiselect(rootProduto.get(Produto_.nome).alias("nome_produto")
+				,rootProduto.get(Produto_.descricao).alias("descricao")
+				);
+		criteriaQuery.where(rootProduto.get(Produto_.id).in(criteriaQuery.select(rootCategoria.get(Categoria_.produtos))));
+		
+		TypedQuery<Tuple> typedQuery = manager.createQuery(criteriaQuery);
+		
+		List<Tuple> recs = typedQuery.getResultList();
+		
+		recs.forEach(r -> System.out.println(r.get("nome_produto") + "|" + r.get("descricao")));
+	}
 
 	@Test
 	public void usandoCase(){
