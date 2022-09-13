@@ -21,8 +21,10 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -36,6 +38,8 @@ import lombok.ToString;
 @ToString
 @Entity
 @Table(name = "tab_produtos",uniqueConstraints = @UniqueConstraint(name = "unq_produto01",columnNames = {"nome"}))
+@AllArgsConstructor
+@NoArgsConstructor
 public class Produto extends EntidadeBase{
 	
 //	@EqualsAndHashCode.Include

@@ -19,7 +19,9 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
+import org.hibernate.internal.build.AllowSysOut;
 import org.junit.Test;
 
 import com.algaworks.ecommerce.dto.ProdutoDTO;
@@ -28,25 +30,105 @@ import com.algaworks.ecommerce.model.Categoria_;
 import com.algaworks.ecommerce.model.Produto;
 import com.algaworks.ecommerce.model.Produto_;
 
+import antlr.CppCodeGenerator;
+
 public class TestesCapitulo10 extends EntityManagerTests {
 	
 	@Test
-	public void usandoIn() {
+	public void selecionandoListas() {
+		CriteriaBuilder criteriaBuilder = manager.getCriteriaBuilder();
+		CriteriaQuery cqCategoria = criteriaBuilder.createQuery(Categoria.class);
+		Root<Categoria> rootCategoria = cqCategoria.from(Categoria.class);
+
+		//Lista Produtos de uma Categoria
+		cqCategoria.select(rootCategoria.get(Categoria_.produtos));
+
+		TypedQuery<Categoria> tqCategoria = manager.createQuery(cqCategoria);
+		
+		List<Categoria> cats = tqCategoria.getResultList();
+		
+		for (Categoria categoria : cats) {
+			List<Produto> produtos = categoria.getProdutos(); 
+		}
+	}
+	
+	@Test
+	public void usandoSubqueries() {
+		CriteriaBuilder criteriaBuilder = manager.getCriteriaBuilder();
+		CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(Produto.class);
+		
+		Root<Produto> root = criteriaQuery.from(Produto.class);
+		
+		//Listando todos os Produtos
+		criteriaQuery.select(root);
+		
+		Subquery<BigDecimal> subquery = criteriaQuery.subquery(BigDecimal.class);
+		
+		Root<Produto> subqueryRoot = subquery.from(Produto.class);
+
+		//Subquery deve retornar a média geral dos preços dos produtos
+		subquery.select(criteriaBuilder.avg(subqueryRoot.get(Produto_.precoVenda)).as(BigDecimal.class));
+		
+		criteriaQuery.where(criteriaBuilder.greaterThan(root.get(Produto_.precoVenda), subquery));
+		
+		TypedQuery<Produto> typedQuery = manager.createQuery(criteriaQuery);
+		
+		List<Produto> produtos = typedQuery.getResultList();
+		
+		produtos.forEach(p -> System.out.println(p.getDescricao() + " | " + p.getPrecoVenda()));
+	}
+	
+	@Test
+	public void usandoDistinct() {
 		CriteriaBuilder criteriaBuilder = manager.getCriteriaBuilder();
 		CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(Tuple.class);
 		Root<Produto> rootProduto = criteriaQuery.from(Produto.class);
-		Root<Categoria> rootCategoria = criteriaQuery.from(Categoria.class);
 
-		criteriaQuery.multiselect(rootProduto.get(Produto_.nome).alias("nome_produto")
-				,rootProduto.get(Produto_.descricao).alias("descricao")
-				);
-		criteriaQuery.where(rootProduto.get(Produto_.id).in(criteriaQuery.select(rootCategoria.get(Categoria_.produtos))));
+		criteriaQuery.multiselect(criteriaBuilder.literal("nome").alias("nome_produto"),
+				                  criteriaBuilder.literal("descricao").alias("descricao"));
+		
+		criteriaQuery.distinct(true);
 		
 		TypedQuery<Tuple> typedQuery = manager.createQuery(criteriaQuery);
 		
 		List<Tuple> recs = typedQuery.getResultList();
 		
 		recs.forEach(r -> System.out.println(r.get("nome_produto") + "|" + r.get("descricao")));
+	}
+
+	@Test
+	public void usandoIn() {
+		CriteriaBuilder criteriaBuilder = manager.getCriteriaBuilder();
+//		CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(Tuple.class);
+		CriteriaQuery cqCategoria = criteriaBuilder.createQuery(Categoria.class);
+//		Root<Produto> rootProduto = criteriaQuery.from(Produto.class);
+		Root<Categoria> rootCategoria = cqCategoria.from(Categoria.class);
+
+		//Lista nome e descrição do produto
+//		criteriaQuery.multiselect(rootProduto.get(Produto_.nome).alias("nome_produto")
+//				,rootProduto.get(Produto_.descricao).alias("descricao")
+//				);
+		
+		//Lista Produtos de uma Categoria
+		cqCategoria.select(rootCategoria.get(Categoria_.produtos));
+
+//		criteriaQuery.where(rootProduto.get(Produto_.id).in(rootCategoria.getCompoundSelectionItems().contains(rootCategoria));
+//		subqueryProduto.select(criteriaBuilder.in(null))
+		
+		
+//		TypedQuery<Tuple> typedQuery = manager.createQuery(criteriaQuery);
+		
+		TypedQuery<Categoria> tqCategoria = manager.createQuery(cqCategoria);
+		
+//		List<Tuple> recs = typedQuery.getResultList();
+		
+		List<Categoria> cats = tqCategoria.getResultList();
+		
+//		recs.forEach(r -> System.out.println(r.get("nome_produto") + "|" + r.get("descricao")));
+		
+		cats.forEach(c-> {
+			c.getProdutos().forEach(cp -> System.out.println(cp.getNome()));
+		});
 	}
 
 	@Test
@@ -57,9 +139,10 @@ public class TestesCapitulo10 extends EntityManagerTests {
 		
 		criteriaQuery.multiselect(
 				 root.get(Produto_.nome).alias("nome_produto")
-				,criteriaBuilder.selectCase(root.get(Produto_.nome))
+				,criteriaBuilder.selectCase()
 				.when(criteriaBuilder.like(root.get(Produto_.nome), "Produto %"),"Produto Novo")
-				.otherWise("Produto Antigo")).alias("classificacao_produto");
+				.otherwise("Produto Antigo").alias("classificacao_produto")
+				);
 		
 		TypedQuery<Tuple> typedQuery = manager.createQuery(criteriaQuery);
 		List<Tuple> res = typedQuery.getResultList();
@@ -715,7 +798,7 @@ public class TestesCapitulo10 extends EntityManagerTests {
 	public void retornandoTodosOsProdutos() {
 		CriteriaBuilder cb = manager.getCriteriaBuilder();
 
-		CriteriaQuery cq = cb.createQuery(Produto.class);
+		CriteriaQuery cq = cb.createQuery(Produto.class);  
 
 		Root<Produto> root = cq.from(Produto.class);
 
