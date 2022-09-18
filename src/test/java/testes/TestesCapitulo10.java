@@ -2,7 +2,6 @@ package testes;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -13,26 +12,88 @@ import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import org.hibernate.internal.build.AllowSysOut;
 import org.junit.Test;
 
 import com.algaworks.ecommerce.dto.ProdutoDTO;
 import com.algaworks.ecommerce.model.Categoria;
 import com.algaworks.ecommerce.model.Categoria_;
+import com.algaworks.ecommerce.model.Cliente;
+import com.algaworks.ecommerce.model.Cliente_;
+import com.algaworks.ecommerce.model.ItemPedido;
+import com.algaworks.ecommerce.model.ItemPedido_;
+import com.algaworks.ecommerce.model.Pedido;
+import com.algaworks.ecommerce.model.Pedido_;
 import com.algaworks.ecommerce.model.Produto;
 import com.algaworks.ecommerce.model.Produto_;
 
-import antlr.CppCodeGenerator;
-
 public class TestesCapitulo10 extends EntityManagerTests {
+	
+	@Test
+	public void subqueryComIn() {
+		CriteriaBuilder criteriaBuilder = manager.getCriteriaBuilder();
+		CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(Pedido.class);
+		CriteriaQuery criteriaQueryProduto = criteriaBuilder.createQuery(Produto.class);
+		CriteriaQuery criteriaQueryCategoria = criteriaBuilder.createQuery(Categoria.class);
+				
+		Root<Pedido> root = criteriaQuery.from(Pedido.class);
+		
+		criteriaQuery.select(root);
+		
+		//Subquery
+		Subquery<Produto> subqueryProduto = criteriaQuery.subquery(Produto.class);
+		Root<Produto> subqueryRootProduto = criteriaQueryProduto.from(Produto.class);
+		Root<Categoria> subqueryRootCategoria = criteriaQueryCategoria.from(Categoria.class);
+		subqueryProduto.select(subqueryRootProduto);
+		subqueryProduto.where(subqueryRootProduto.in(subqueryRootCategoria.get(Categoria_.produtos)
+				             ,criteriaBuilder.equal(subqueryRootCategoria.get(Categoria_.nome), "Eletrônicos")));
+		
+		criteriaQuery.where(subqueryProduto);
+		
+		TypedQuery<Pedido> typedQuery = manager.createQuery(criteriaQuery);
+		
+		List<Pedido> pedidos = typedQuery.getResultList();
+		
+		pedidos.forEach(p -> System.out.println(p.toString()));
+	}
+	
+	@Test
+	public void subqueryComQueryPrincipal() {
+	/* Método de exercício de subquery com query principal
+	 * Listar Clientes que tenham comprado valor superior à R$ 500,00
+	 */	
+		
+		CriteriaBuilder criteriaBuilder = manager.getCriteriaBuilder();
+		
+		CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(Cliente.class);
+		
+		Root<Cliente> root = criteriaQuery.from(Cliente.class);
+		
+		//Busca os Clientes
+		criteriaQuery.select(root);
+		
+		/* Subquery para retornar a soma dos produtos que cada cliente comprou
+		 * Para chegar ao valor dos produtos é preciso das tabelas de Pedido, ItemPedido e Produto
+		 */
+		Subquery<BigDecimal> subquery = criteriaQuery.subquery(BigDecimal.class);
+		Root<Pedido> subqueryRoot = subquery.from(Pedido.class);
+		Join<Pedido,ItemPedido> joinPedidoItemPedido = subqueryRoot.join(Pedido_.itensPedido);
+		Join<ItemPedido,Produto> joinItemPedidoProduto = joinPedidoItemPedido.join(ItemPedido_.idProduto);
+		
+		subquery.select(criteriaBuilder.sum(joinItemPedidoProduto.get(Produto_.precoVenda)));
+		subquery.where(criteriaBuilder.equal(root.get(Cliente_.id),subqueryRoot.get(Pedido_.cliente).get(Cliente_.id)));
+		
+		criteriaQuery.where(criteriaBuilder.greaterThanOrEqualTo(subquery, new BigDecimal(500)));
+		
+		TypedQuery<Cliente> typedQuery = manager.createQuery(criteriaQuery);
+		List<Cliente> clientes = typedQuery.getResultList();
+		clientes.forEach(c -> System.out.println(c.getNomeCompleto()));
+	}
 	
 	@Test
 	public void selecionandoListas() {
@@ -43,13 +104,11 @@ public class TestesCapitulo10 extends EntityManagerTests {
 		//Lista Produtos de uma Categoria
 		cqCategoria.select(rootCategoria.get(Categoria_.produtos));
 
-		TypedQuery<Categoria> tqCategoria = manager.createQuery(cqCategoria);
+		TypedQuery<Produto> tqCategoria = manager.createQuery(cqCategoria);
 		
-		List<Categoria> cats = tqCategoria.getResultList();
+		List<Produto> prods = tqCategoria.getResultList();
 		
-		for (Categoria categoria : cats) {
-			List<Produto> produtos = categoria.getProdutos(); 
-		}
+		prods.forEach(p -> System.out.println(p.getNome()));
 	}
 	
 	@Test
