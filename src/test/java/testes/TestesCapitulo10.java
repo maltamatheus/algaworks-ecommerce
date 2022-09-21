@@ -7,11 +7,14 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.NoResultException;
+import javax.persistence.Query;
 import javax.persistence.TemporalType;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ParameterExpression;
@@ -35,25 +38,147 @@ import com.algaworks.ecommerce.model.Produto_;
 public class TestesCapitulo10 extends EntityManagerTests {
 	
 	@Test
-	public void subqueryComIn() {
+	public void deletandoObjetos() {
+		
+		CriteriaBuilder criteriaBuilder = manager.getCriteriaBuilder();
+		CriteriaDelete<Produto> criteriaDelete = criteriaBuilder.createCriteriaDelete(Produto.class);
+		Root<Produto> root = criteriaDelete.from(Produto.class);
+		
+		criteriaDelete.where(criteriaBuilder.like(root.get(Produto_.nome), "Produto 1%"));
+		
+		Query delete = manager.createQuery(criteriaDelete);
+
+		manager.getTransaction().begin();
+		
+		int regs = delete.executeUpdate();
+		
+		manager.getTransaction().commit();
+		
+		System.out.println(regs);
+		
+	}
+
+	@Test
+	public void atualizandoObjetos() {
+		
+		CriteriaBuilder criteriaBuilder = manager.getCriteriaBuilder();
+		CriteriaUpdate<Produto> criteriaUpdate = criteriaBuilder.createCriteriaUpdate(Produto.class);
+		Root<Produto> root = criteriaUpdate.from(Produto.class);
+		
+		criteriaUpdate.set(root.get(Produto_.precoVenda)
+							, criteriaBuilder.prod(root.get(Produto_.precoVenda)
+													, new BigDecimal("1.1"))
+				);
+		
+		Subquery<Integer> subquery = criteriaUpdate.subquery(Integer.class);
+		Root<Produto> subqueryRoot = subquery.correlate(root);
+		Join<Produto,Categoria> joinCategoria = subqueryRoot.join(Produto_.categorias);
+		subquery.select(subqueryRoot.get(Produto_.id));
+		subquery.where(criteriaBuilder.equal(joinCategoria.get(Categoria_.nome), "Eletrônicos"));
+		
+		criteriaUpdate.where(criteriaBuilder.exists(subquery));
+		
+		Query update = manager.createQuery(criteriaUpdate);
+
+		manager.getTransaction().begin();
+		
+		update.executeUpdate();
+		
+		manager.getTransaction().commit();
+		
+	}
+
+	@Test
+	public void subqueryComAny() {
+		CriteriaBuilder criteriaBuilder = manager.getCriteriaBuilder();
+		CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(String.class);
+		Root<Produto> root = criteriaQuery.from(Produto.class);
+		
+		criteriaQuery.select(root.get(Produto_.nome));
+		
+		Subquery<String> subquery = criteriaQuery.subquery(String.class);
+		Root<Produto> subqueryRoot = subquery.from(Produto.class);
+		subquery.select(subqueryRoot.get(Produto_.nome));
+		subquery.where(criteriaBuilder.like(subqueryRoot.get(Produto_.descricao),"Descrição%"));
+
+		criteriaQuery.where(criteriaBuilder.equal(root.get(Produto_.nome),criteriaBuilder.any(subquery)));
+		criteriaQuery.orderBy(criteriaBuilder.asc(root.get(Produto_.id)));
+		
+		TypedQuery<String> typedQuery = manager.createQuery(criteriaQuery);
+		List<String> produtos = typedQuery.getResultList();
+		
+		produtos.forEach(p -> System.out.println(p));
+	}
+	
+	@Test
+	public void subqueryComAll() {
+		CriteriaBuilder criteriaBuilder = manager.getCriteriaBuilder();
+		CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(String.class);
+		Root<Produto> root = criteriaQuery.from(Produto.class);
+		
+		criteriaQuery.select(root.get(Produto_.nome));
+		
+		Subquery<String> subquery = criteriaQuery.subquery(String.class);
+		Root<Produto> subqueryRoot = subquery.from(Produto.class);
+		subquery.select(subqueryRoot.get(Produto_.nome));
+		subquery.where(criteriaBuilder.like(subqueryRoot.get(Produto_.descricao),"Descrição Produto 1"));
+
+		criteriaQuery.where(criteriaBuilder.equal(root.get(Produto_.nome),criteriaBuilder.all(subquery)));
+		
+		TypedQuery<String> typedQuery = manager.createQuery(criteriaQuery);
+		List<String> produtos = typedQuery.getResultList();
+		
+		produtos.forEach(p -> System.out.println(p));
+	}
+	
+	@Test
+	public void subqueryComExists() {
 		CriteriaBuilder criteriaBuilder = manager.getCriteriaBuilder();
 		CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(Pedido.class);
-		CriteriaQuery criteriaQueryProduto = criteriaBuilder.createQuery(Produto.class);
-		CriteriaQuery criteriaQueryCategoria = criteriaBuilder.createQuery(Categoria.class);
+		Root<Pedido> root = criteriaQuery.from(Pedido.class);
+		
+		criteriaQuery.select(root);
+		
+		Subquery<ItemPedido> subquery = criteriaQuery.subquery(ItemPedido.class);
+		Root<ItemPedido> subqueryRoot = subquery.from(ItemPedido.class);
+		Join<ItemPedido,Produto> joinItemPedidoProduto = subqueryRoot.join(ItemPedido_.idProduto);
+		Join<Produto,Categoria> joinProdutoCategoria = joinItemPedidoProduto.join(Produto_.categorias);
+		subquery.select(subqueryRoot);
+		subquery.where(criteriaBuilder.equal(joinProdutoCategoria.get(Categoria_.nome), "Eletrônicos"));
+		
+		criteriaQuery.where(criteriaBuilder.exists(subquery));
+		criteriaQuery.orderBy(criteriaBuilder.asc(root.get(Pedido_.id)));
+		
+		TypedQuery<Pedido> typedQuery = manager.createQuery(criteriaQuery);
+		List<Pedido> pedidos = typedQuery.getResultList();
+		
+		pedidos.forEach(p -> System.out.println(p.getId()));
+		
+	}
+	
+	@Test
+	public void subqueryComIn() {
+		CriteriaBuilder criteriaBuilder = manager.getCriteriaBuilder();
+		CriteriaQuery<Pedido> criteriaQuery = criteriaBuilder.createQuery(Pedido.class);
 				
 		Root<Pedido> root = criteriaQuery.from(Pedido.class);
 		
 		criteriaQuery.select(root);
 		
-		//Subquery
+		//Subquery Categoria
 		Subquery<Produto> subqueryProduto = criteriaQuery.subquery(Produto.class);
-		Root<Produto> subqueryRootProduto = criteriaQueryProduto.from(Produto.class);
-		Root<Categoria> subqueryRootCategoria = criteriaQueryCategoria.from(Categoria.class);
-		subqueryProduto.select(subqueryRootProduto);
-		subqueryProduto.where(subqueryRootProduto.in(subqueryRootCategoria.get(Categoria_.produtos)
-				             ,criteriaBuilder.equal(subqueryRootCategoria.get(Categoria_.nome), "Eletrônicos")));
+		Root<Produto> subqueryRootProduto = subqueryProduto.from(Produto.class);
 		
-		criteriaQuery.where(subqueryProduto);
+		Subquery<Categoria> subqueryCategoria = subqueryProduto.subquery(Categoria.class);
+		Root<Categoria> subqueryRootCategoria = subqueryCategoria.from(Categoria.class);
+		
+		subqueryCategoria.select(subqueryRootCategoria);
+		subqueryCategoria.where(criteriaBuilder.equal(subqueryRootCategoria.get(Categoria_.nome), "Eletrônicos"));
+		
+		subqueryProduto.select(subqueryRootProduto);
+		subqueryProduto.where(subqueryRootProduto.in(subqueryCategoria));
+		
+		criteriaQuery.where(root.in(subqueryProduto));
 		
 		TypedQuery<Pedido> typedQuery = manager.createQuery(criteriaQuery);
 		
