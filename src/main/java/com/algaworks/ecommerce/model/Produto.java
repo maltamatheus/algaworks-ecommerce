@@ -6,20 +6,30 @@ import java.util.List;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ColumnResult;
+import javax.persistence.ConstructorResult;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EntityResult;
+import javax.persistence.FieldResult;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
+import javax.persistence.SqlResultSetMapping;
+import javax.persistence.SqlResultSetMappings;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
+
+import com.algaworks.ecommerce.dto.ProdutoDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -30,6 +40,40 @@ import lombok.ToString;
 
 @Getter
 @Setter
+@NamedNativeQueries({
+	@NamedNativeQuery(name = "listar"
+						,query = "select * from tab_produtos order by id"
+						,resultClass = Produto.class),
+	@NamedNativeQuery(name = "listarComResultSetMapping"
+						,query = "select * from tab_teste_produtos order by idx"
+						,resultSetMapping = "MapeandoProdutoComFieldResult")	
+})
+@SqlResultSetMappings({
+	@SqlResultSetMapping(name="MapProduto",entities = {@EntityResult(entityClass=Produto.class)}),
+	@SqlResultSetMapping(name="MapProdutoCategoria"
+							,entities = {@EntityResult(entityClass=Produto.class),
+								@EntityResult(entityClass = Categoria.class)}),
+	@SqlResultSetMapping(name="MapeandoProdutoComFieldResult"
+							,entities = {@EntityResult(entityClass = Produto.class
+															,fields = {
+																@FieldResult(name = "id", column = "idx"),
+																@FieldResult(name = "nome", column = "nome_produto"),
+																@FieldResult(name = "dataInclusaoCadastro", column = "dtInclusao"),
+																@FieldResult(name = "descricao", column = "descricao_prd"),
+																@FieldResult(name = "fotoProduto", column = "foto"),
+																@FieldResult(name = "precoCusto", column = "precocusto"),
+																@FieldResult(name = "precoVenda", column = "precovenda"),
+															})}),
+	@SqlResultSetMapping(name = "MapeandoProdutoComColumnResult"
+							,classes = {
+									@ConstructorResult(targetClass = ProdutoDTO.class
+															,columns = {
+																	@ColumnResult(name = "idx",type = Integer.class),
+																	@ColumnResult(name = "nome_produto", type = String.class),
+																	@ColumnResult(name = "descricao_prd", type = String.class)
+															})
+							})
+	})
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NamedQueries({
 	@NamedQuery(name = "Produto.listarPorNomeProduto",query = "select p from Produto p where p.nome = :pNome"),
