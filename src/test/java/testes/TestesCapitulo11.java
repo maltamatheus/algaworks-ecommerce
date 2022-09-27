@@ -12,6 +12,16 @@ import com.algaworks.ecommerce.model.Produto;
 public class TestesCapitulo11 extends EntityManagerTests{
 	
 	@Test
+	public void queryNativaComNamedNativeQueryComResultSetMappingXML() {
+		
+		Query query = manager.createNamedQuery("listarComResultSetMappingXML");
+		
+		List<Produto> prds = query.getResultList();
+		
+		prds.forEach(p -> System.out.println(String.format("Produto => %d | %s | %s", p.getId(), p.getNome(), p.getDescricao())));
+	}
+	
+	@Test
 	public void queryNativaComNamedNativeQueryComResultSetMapping() {
 		
 		Query query = manager.createNamedQuery("listarComResultSetMapping");
