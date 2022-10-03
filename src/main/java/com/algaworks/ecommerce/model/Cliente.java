@@ -6,15 +6,13 @@ import java.util.Map;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ForeignKey;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyColumn;
@@ -29,10 +27,14 @@ import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.algaworks.ecommerce.enums.EnumSexo;
 import com.algaworks.ecommerce.listeners.ListenerCliente;
 import com.algaworks.ecommerce.listeners.ListenerGeral;
+import com.algaworks.ecommerce.model.converters.ConversorBooleanToSimNao;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -79,6 +81,7 @@ public class Cliente extends EntidadeBase{
 	private String nomeCompleto;
 	
 	@Enumerated(EnumType.STRING)
+	@javax.validation.constraints.NotNull
 	@ToString.Include
 	@Column(nullable = false)
 	private EnumSexo sexo;
@@ -102,6 +105,12 @@ public class Cliente extends EntidadeBase{
 	@Column(table = "tab_clientes_detalhe",name = "data_nascto")
 	@ToString.Include
 	private LocalDate dataNascto;
+	
+	@NotNull
+	@Column(length = 3, nullable = false)
+	@Convert(converter = ConversorBooleanToSimNao.class)
+	@ToString.Include
+	private Boolean ativo = false;
 	
 	@PrePersist
 	public void aoPersistir() {

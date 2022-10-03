@@ -3,7 +3,7 @@ insert into tab_produtos (nome,descricao,preco_venda_produto,data_inclusao_cadas
 insert into tab_produtos (nome,descricao,preco_venda_produto,data_inclusao_cadastro) values ('Smart Watch Apple','Novo Apple Smart Watch XPTO',1499.0,current_timestamp - interval '5 days');
 insert into tab_produtos (nome,descricao,preco_venda_produto,data_inclusao_cadastro) values ('Fone de Ouvido','Apple Lightning Ear Phone',199.0,current_timestamp + interval '50 day');
 --
-insert into tab_clientes (nome,sobrenome,sexo) values ('Edir','Soares de Aguiar','FEMININO');
+insert into tab_clientes (nome,sobrenome,sexo, ativo) values ('Edir','Soares de Aguiar','FEMININO','SIM');
 --
 insert into tab_categorias values (1,'Eletrônicos',null);
 insert into tab_categorias values (2,'Cosméticos',null);
